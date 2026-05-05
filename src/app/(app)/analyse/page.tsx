@@ -1,19 +1,383 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import * as React from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import {
+  AlertTriangle,
+  ArrowRight,
+  Info,
+  Link as LinkIcon,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+
+const PROPERTY_TYPES = [
+  { value: "terraced", label: "Terraced" },
+  { value: "semi", label: "Semi-detached" },
+  { value: "detached", label: "Detached" },
+  { value: "flat", label: "Flat / apartment" },
+  { value: "bungalow", label: "Bungalow" },
+  { value: "other", label: "Other" },
+] as const;
+
+const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+
+const Schema = z.object({
+  address: z.string().min(3, "Please enter the full address"),
+  postcode: z
+    .string()
+    .min(1, "Postcode required")
+    .regex(POSTCODE_RE, "Enter a valid UK postcode"),
+  pricePounds: z
+    .number({ message: "Enter the asking price" })
+    .int("Use whole pounds")
+    .min(10_000, "Minimum £10,000")
+    .max(10_000_000, "Maximum £10,000,000"),
+  bedrooms: z.number().int().min(1).max(10),
+  propertyType: z.enum([
+    "terraced",
+    "semi",
+    "detached",
+    "flat",
+    "bungalow",
+    "other",
+  ]),
+  monthlyRentPounds: z
+    .number({ message: "Enter the expected monthly rent" })
+    .int("Use whole pounds")
+    .min(100, "Minimum £100")
+    .max(50_000, "Maximum £50,000"),
+  depositPercent: z.number().min(0).max(100),
+  mortgageRate: z.number().min(0).max(20),
+  mortgageTermYears: z.number().int().min(1).max(40),
+});
+
+type FormData = z.infer<typeof Schema>;
 
 export default function AnalysePage() {
+  const router = useRouter();
+  const [tab, setTab] = useState("manual");
+  const [submitting, setSubmitting] = useState(false);
+  const [topError, setTopError] = useState<string | null>(null);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormData>({
+    resolver: zodResolver(Schema),
+    defaultValues: {
+      bedrooms: 3,
+      propertyType: "terraced",
+      depositPercent: 25,
+      mortgageRate: 5.25,
+      mortgageTermYears: 25,
+    },
+  });
+
+  async function onSubmit(values: FormData) {
+    setTopError(null);
+    setSubmitting(true);
+    const res = await fetch("/api/analyse", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setTopError(j.error ?? "Something went wrong. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+    const { id } = (await res.json()) as { id: string };
+    router.push(`/deals/${id}`);
+  }
+
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <Card>
-        <CardHeader>
-          <CardTitle>Analyse a deal</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-muted">
-            Coming in Phase 2 — paste a Rightmove/Zoopla URL or enter property
-            details manually to compute a 0–100 deal score.
-          </p>
-        </CardContent>
-      </Card>
+    <div className="max-w-4xl mx-auto px-4 py-10">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-ink">Analyse a deal</h1>
+        <p className="text-muted mt-1">
+          Paste a Rightmove or Zoopla URL — or enter the property details
+          manually. We&apos;ll score the deal and write a report.
+        </p>
+      </div>
+
+      <Tabs value={tab} onValueChange={setTab}>
+        <TabsList className="mb-6">
+          <TabsTrigger value="url">Paste URL</TabsTrigger>
+          <TabsTrigger value="manual">Manual entry</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="url">
+          <UrlPasteSoon onUseManual={() => setTab("manual")} />
+        </TabsContent>
+
+        <TabsContent value="manual">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <Card>
+              <CardContent className="pt-6">
+                <SectionHeader
+                  title="Property details"
+                  hint="What you're looking at, in plain numbers."
+                />
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <Field
+                    label="Address"
+                    error={errors.address?.message}
+                    className="lg:col-span-2"
+                  >
+                    <Input
+                      placeholder="21 Albert Road, Levenshulme, Manchester"
+                      {...register("address")}
+                    />
+                  </Field>
+                  <Field label="Postcode" error={errors.postcode?.message}>
+                    <Input placeholder="M19 3PT" {...register("postcode")} />
+                  </Field>
+                  <Field
+                    label="Asking price (£)"
+                    error={errors.pricePounds?.message}
+                  >
+                    <Input
+                      type="number"
+                      placeholder="185000"
+                      step="1"
+                      {...register("pricePounds", { valueAsNumber: true })}
+                    />
+                  </Field>
+                  <Field
+                    label="Bedrooms"
+                    error={errors.bedrooms?.message}
+                  >
+                    <Select {...register("bedrooms", { valueAsNumber: true })}>
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                  <Field
+                    label="Property type"
+                    error={errors.propertyType?.message}
+                  >
+                    <Select {...register("propertyType")}>
+                      {PROPERTY_TYPES.map((p) => (
+                        <option key={p.value} value={p.value}>
+                          {p.label}
+                        </option>
+                      ))}
+                    </Select>
+                  </Field>
+                  <Field
+                    label="Monthly rent (£)"
+                    error={errors.monthlyRentPounds?.message}
+                    hint="Achievable rent, not optimistic."
+                  >
+                    <Input
+                      type="number"
+                      placeholder="1150"
+                      step="1"
+                      {...register("monthlyRentPounds", { valueAsNumber: true })}
+                    />
+                  </Field>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="pt-6">
+                <SectionHeader
+                  title="Mortgage assumptions"
+                  badge="V1.2 module"
+                  hint="Defaults are typical UK BTL terms. Full stress-testing comes in V1.2."
+                />
+                <div className="grid sm:grid-cols-3 gap-4">
+                  <Field
+                    label="Deposit (%)"
+                    error={errors.depositPercent?.message}
+                  >
+                    <Input
+                      type="number"
+                      step="0.5"
+                      {...register("depositPercent", { valueAsNumber: true })}
+                    />
+                  </Field>
+                  <Field
+                    label="Mortgage rate (%)"
+                    error={errors.mortgageRate?.message}
+                  >
+                    <Input
+                      type="number"
+                      step="0.05"
+                      {...register("mortgageRate", { valueAsNumber: true })}
+                    />
+                  </Field>
+                  <Field
+                    label="Term (years)"
+                    error={errors.mortgageTermYears?.message}
+                  >
+                    <Input
+                      type="number"
+                      step="1"
+                      {...register("mortgageTermYears", { valueAsNumber: true })}
+                    />
+                  </Field>
+                </div>
+              </CardContent>
+            </Card>
+
+            {topError && (
+              <div className="flex items-start gap-2 text-sm text-danger bg-[var(--color-danger)]/5 border border-[var(--color-danger)]/20 rounded-md p-3">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>{topError}</span>
+              </div>
+            )}
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <p className="text-xs text-faint flex items-start gap-1.5 max-w-md">
+                <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
+                <span>
+                  Some factors (area growth, BMV, licensing) need real UK data
+                  sources that ship in Phase 3. Until then they&apos;ll show
+                  &quot;insufficient data&quot;.
+                </span>
+              </p>
+              <Button type="submit" size="lg" disabled={submitting}>
+                {submitting ? "Running analysis…" : "Run analysis"}
+                {!submitting && <ArrowRight className="h-4 w-4" />}
+              </Button>
+            </div>
+
+            <p className="text-xs italic text-faint">
+              Not financial advice. Do your own due diligence.
+            </p>
+          </form>
+        </TabsContent>
+      </Tabs>
     </div>
+  );
+}
+
+function UrlPasteSoon({ onUseManual }: { onUseManual: () => void }) {
+  return (
+    <Card>
+      <CardContent className="pt-6">
+        <div className="flex items-start gap-4">
+          <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
+            <LinkIcon className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="font-semibold text-ink">Auto-fill from URL</h2>
+            <p className="text-sm text-muted mt-1 max-w-xl">
+              Paste a Rightmove or Zoopla link and we&apos;ll pull the address,
+              price, beds and rent estimate for you. This ships in Phase 4 of
+              the build.
+            </p>
+            <div className="mt-4 flex gap-3">
+              <Input
+                disabled
+                placeholder="https://www.rightmove.co.uk/properties/…"
+                className="max-w-md"
+              />
+              <Button disabled>Auto-fill</Button>
+            </div>
+            <button
+              type="button"
+              onClick={onUseManual}
+              className="text-sm text-[var(--color-primary)] font-medium hover:underline mt-4 inline-flex items-center gap-1"
+            >
+              Use manual entry instead
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionHeader({
+  title,
+  hint,
+  badge,
+}: {
+  title: string;
+  hint?: string;
+  badge?: string;
+}) {
+  return (
+    <div className="flex items-start justify-between mb-4 gap-3">
+      <div>
+        <h2 className="font-semibold text-ink">{title}</h2>
+        {hint && <p className="text-xs text-muted mt-0.5">{hint}</p>}
+      </div>
+      {badge && (
+        <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] whitespace-nowrap">
+          {badge}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function Field({
+  label,
+  error,
+  hint,
+  className,
+  children,
+}: {
+  label: string;
+  error?: string;
+  hint?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  const id = React.useId();
+  // attach label to the first child via aria-labelledby
+  return (
+    <div className={"space-y-1.5 " + (className ?? "")}>
+      <Label htmlFor={id}>{label}</Label>
+      {React.isValidElement(children)
+        ? React.cloneElement(children as React.ReactElement<{ id?: string }>, {
+            id,
+          })
+        : children}
+      {hint && !error && <p className="text-xs text-faint">{hint}</p>}
+      {error && <p className="text-xs text-danger">{error}</p>}
+    </div>
+  );
+}
+
+function Select({
+  className,
+  children,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement>) {
+  return (
+    <select
+      className={
+        "flex h-10 w-full rounded-md border border-line bg-white px-3 py-2 text-sm text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] " +
+        (className ?? "")
+      }
+      {...props}
+    >
+      {children}
+    </select>
   );
 }
