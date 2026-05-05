@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
+import { Logo } from "@/components/app/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,9 +64,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-fill px-4 py-10">
       <div className="w-full max-w-md">
         <div className="flex justify-center mb-6">
-          <div className="h-12 w-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-xl">
-            D
-          </div>
+          <Logo size="lg" />
         </div>
         <Card>
           <CardHeader>

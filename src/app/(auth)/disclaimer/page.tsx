@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
+import { Logo } from "@/components/app/Logo";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -76,6 +77,9 @@ export default function DisclaimerPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-fill px-4 py-10">
       <div className="w-full max-w-2xl bg-white rounded-xl border border-line shadow-sm p-6 md:p-10">
+        <div className="flex justify-center mb-6">
+          <Logo size="md" />
+        </div>
         <div className="flex flex-col items-center text-center mb-6">
           <div className="h-12 w-12 rounded-full bg-[var(--color-warning)]/15 text-[var(--color-warning)] flex items-center justify-center mb-3">
             <AlertTriangle className="h-6 w-6" />

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { Logo } from "@/components/app/Logo";
 import { Button } from "@/components/ui/button";
 
 async function signOut() {
@@ -36,11 +37,8 @@ export default async function AppLayout({
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-line bg-white">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-sm">
-              D
-            </div>
-            <span className="font-semibold text-ink">Dealscope</span>
+          <Link href="/dashboard">
+            <Logo size="sm" />
           </Link>
           <nav className="flex items-center gap-1 text-sm">
             <Link
