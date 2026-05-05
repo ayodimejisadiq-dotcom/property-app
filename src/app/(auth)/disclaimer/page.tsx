@@ -1,0 +1,130 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { AlertTriangle } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CURRENT_DISCLAIMER_VERSION } from "@/lib/constants";
+
+const POINTS = [
+  {
+    title: "Not financial advice",
+    body:
+      "Scores and reports are for research only, not a recommendation to buy, sell or finance property.",
+  },
+  {
+    title: "Do your own due diligence",
+    body:
+      "Always commission a survey, valuation and legal review. Consult a qualified mortgage broker.",
+  },
+  {
+    title: "Data has limitations",
+    body:
+      "Estimates rely on third-party sources (Land Registry, ONS, councils) that may be incomplete or delayed.",
+  },
+  {
+    title: "Your decisions, your responsibility",
+    body:
+      "Dealscope and Daramola Consulting accept no liability for investment outcomes.",
+  },
+];
+
+export default function DisclaimerPage() {
+  const router = useRouter();
+  const [checked, setChecked] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function accept() {
+    setLoading(true);
+    setError(null);
+    const supabase = createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      router.push("/login");
+      return;
+    }
+    const { error: updErr } = await supabase
+      .from("users")
+      .update({
+        disclaimer_accepted_at: new Date().toISOString(),
+        disclaimer_version: CURRENT_DISCLAIMER_VERSION,
+      })
+      .eq("id", user.id);
+
+    if (updErr) {
+      setError(updErr.message);
+      setLoading(false);
+      return;
+    }
+
+    await supabase.from("audit_log").insert({
+      user_id: user.id,
+      event_type: "disclaimer_accepted",
+      metadata: { version: CURRENT_DISCLAIMER_VERSION },
+    });
+
+    router.push("/dashboard");
+    router.refresh();
+  }
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-fill px-4 py-10">
+      <div className="w-full max-w-2xl bg-white rounded-xl border border-line shadow-sm p-6 md:p-10">
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="h-12 w-12 rounded-full bg-[var(--color-warning)]/15 text-[var(--color-warning)] flex items-center justify-center mb-3">
+            <AlertTriangle className="h-6 w-6" />
+          </div>
+          <h1 className="text-2xl font-bold text-ink">
+            Important — Read Before Continuing
+          </h1>
+          <p className="text-muted mt-2">
+            Dealscope is an analytical tool, not a financial adviser.
+          </p>
+        </div>
+
+        <ol className="space-y-4 mb-8">
+          {POINTS.map((p, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] text-sm font-semibold">
+                {i + 1}
+              </span>
+              <div>
+                <p className="font-semibold text-ink">{p.title}</p>
+                <p className="text-sm text-muted">{p.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+
+        <label className="flex items-start gap-3 mb-6 cursor-pointer">
+          <Checkbox
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+            className="mt-0.5"
+          />
+          <span className="text-sm text-ink">
+            I understand this is not financial advice and I will do my own due
+            diligence.
+          </span>
+        </label>
+
+        {error && <p className="text-sm text-danger mb-3">{error}</p>}
+
+        <Button
+          onClick={accept}
+          disabled={!checked || loading}
+          size="lg"
+          className="w-full"
+        >
+          {loading ? "Saving…" : "I Understand — Continue"}
+        </Button>
+      </div>
+    </div>
+  );
+}

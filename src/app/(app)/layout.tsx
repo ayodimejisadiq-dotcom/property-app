@@ -1,0 +1,79 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { Button } from "@/components/ui/button";
+
+async function signOut() {
+  "use server";
+  const { createClient } = await import("@/lib/supabase/server");
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/login");
+}
+
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("email, is_admin")
+    .eq("id", user.id)
+    .single();
+
+  return (
+    <div className="min-h-screen flex flex-col">
+      <header className="border-b border-line bg-white">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="h-7 w-7 rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center font-bold text-sm">
+              D
+            </div>
+            <span className="font-semibold text-ink">Dealscope</span>
+          </Link>
+          <nav className="flex items-center gap-1 text-sm">
+            <Link
+              href="/dashboard"
+              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/analyse"
+              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+            >
+              Analyse
+            </Link>
+            <Link
+              href="/deals"
+              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+            >
+              Deals
+            </Link>
+            {profile?.is_admin && (
+              <Link
+                href="/admin"
+                className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+              >
+                Admin
+              </Link>
+            )}
+            <form action={signOut}>
+              <Button variant="ghost" size="sm" type="submit">
+                Sign out
+              </Button>
+            </form>
+          </nav>
+        </div>
+      </header>
+      <main className="flex-1 bg-fill">{children}</main>
+    </div>
+  );
+}
