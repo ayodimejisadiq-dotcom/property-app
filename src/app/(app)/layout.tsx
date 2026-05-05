@@ -24,9 +24,13 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("users")
-    .select("email, is_admin")
+    .select("email, is_admin, disclaimer_accepted_at")
     .eq("id", user.id)
     .single();
+
+  if (profile && !profile.disclaimer_accepted_at) {
+    redirect("/disclaimer");
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
