@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +11,7 @@ import {
   ArrowRight,
   Info,
   Link as LinkIcon,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -69,13 +69,16 @@ type FormData = z.infer<typeof Schema>;
 
 export default function AnalysePage() {
   const router = useRouter();
-  const [tab, setTab] = useState("manual");
+  const [tab, setTab] = useState("url");
   const [submitting, setSubmitting] = useState(false);
   const [topError, setTopError] = useState<string | null>(null);
+  const [sourceUrl, setSourceUrl] = useState<string | null>(null);
+  const [scrapeNotice, setScrapeNotice] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(Schema),
@@ -88,13 +91,35 @@ export default function AnalysePage() {
     },
   });
 
+  function applyScraped(d: {
+    address?: string;
+    postcode?: string | null;
+    pricePounds?: number | null;
+    bedrooms?: number | null;
+    propertyType?: FormData["propertyType"] | null;
+    monthlyRentPounds?: number | null;
+  }) {
+    if (d.address) setValue("address", d.address, { shouldValidate: true });
+    if (d.postcode) setValue("postcode", d.postcode, { shouldValidate: true });
+    if (d.pricePounds != null)
+      setValue("pricePounds", d.pricePounds, { shouldValidate: true });
+    if (d.bedrooms != null)
+      setValue("bedrooms", d.bedrooms, { shouldValidate: true });
+    if (d.propertyType)
+      setValue("propertyType", d.propertyType, { shouldValidate: true });
+    if (d.monthlyRentPounds != null)
+      setValue("monthlyRentPounds", d.monthlyRentPounds, {
+        shouldValidate: true,
+      });
+  }
+
   async function onSubmit(values: FormData) {
     setTopError(null);
     setSubmitting(true);
     const res = await fetch("/api/analyse", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(values),
+      body: JSON.stringify({ ...values, sourceUrl }),
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
@@ -123,10 +148,33 @@ export default function AnalysePage() {
         </TabsList>
 
         <TabsContent value="url">
-          <UrlPasteSoon onUseManual={() => setTab("manual")} />
+          <UrlPasteTab
+            onUseManual={() => setTab("manual")}
+            onScraped={(data) => {
+              setSourceUrl(data.sourceUrl ?? null);
+              applyScraped({
+                address: data.address ?? undefined,
+                postcode: data.postcode ?? undefined,
+                pricePounds: data.pricePounds ?? undefined,
+                bedrooms: data.bedrooms ?? undefined,
+                propertyType: data.propertyType ?? undefined,
+                monthlyRentPounds: data.monthlyRentPounds ?? undefined,
+              });
+              setScrapeNotice(
+                "Pre-filled from listing — review and add anything missing.",
+              );
+              setTab("manual");
+            }}
+          />
         </TabsContent>
 
         <TabsContent value="manual">
+          {scrapeNotice && (
+            <div className="mb-4 flex items-start gap-2 text-sm text-ink bg-[var(--color-primary-light)] border border-[var(--color-primary)]/20 rounded-md p-3">
+              <Info className="h-4 w-4 mt-0.5 shrink-0 text-[var(--color-primary)]" />
+              <span>{scrapeNotice}</span>
+            </div>
+          )}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <Card>
               <CardContent className="pt-6">
@@ -273,7 +321,61 @@ export default function AnalysePage() {
   );
 }
 
-function UrlPasteSoon({ onUseManual }: { onUseManual: () => void }) {
+interface ScrapedPayload {
+  source: "rightmove" | "zoopla";
+  sourceUrl: string;
+  address: string;
+  postcode: string | null;
+  pricePounds: number | null;
+  bedrooms: number | null;
+  propertyType:
+    | "terraced"
+    | "semi"
+    | "detached"
+    | "flat"
+    | "bungalow"
+    | "other"
+    | null;
+  monthlyRentPounds: number | null;
+}
+
+function UrlPasteTab({
+  onUseManual,
+  onScraped,
+}: {
+  onUseManual: () => void;
+  onScraped: (data: ScrapedPayload) => void;
+}) {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function autofill(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    if (!/^https?:\/\//i.test(url)) {
+      setError("Paste a full URL starting with https://");
+      return;
+    }
+    setLoading(true);
+    const res = await fetch("/api/scrape", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url }),
+    });
+    setLoading(false);
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      setError(
+        j.error ??
+          "Couldn't auto-fetch this property. Switch to manual entry to continue.",
+      );
+      return;
+    }
+    const { data } = (await res.json()) as { data: ScrapedPayload };
+    onScraped(data);
+  }
+
   return (
     <Card>
       <CardContent className="pt-6">
@@ -281,21 +383,47 @@ function UrlPasteSoon({ onUseManual }: { onUseManual: () => void }) {
           <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
             <LinkIcon className="h-5 w-5" />
           </div>
-          <div>
+          <div className="flex-1">
             <h2 className="font-semibold text-ink">Auto-fill from URL</h2>
             <p className="text-sm text-muted mt-1 max-w-xl">
-              Paste a Rightmove or Zoopla link and we&apos;ll pull the address,
-              price, beds and rent estimate for you. This ships in Phase 4 of
-              the build.
+              Paste a Rightmove or Zoopla link. We&apos;ll pre-fill the address,
+              postcode, price, beds and property type — review them and add the
+              expected rent on the next step.
             </p>
-            <div className="mt-4 flex gap-3">
+            <form onSubmit={autofill} className="mt-4 flex flex-col sm:flex-row gap-3">
               <Input
-                disabled
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://www.rightmove.co.uk/properties/…"
-                className="max-w-md"
+                className="flex-1"
+                inputMode="url"
+                autoComplete="url"
               />
-              <Button disabled>Auto-fill</Button>
-            </div>
+              <Button type="submit" disabled={!url || loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Fetching…
+                  </>
+                ) : (
+                  <>
+                    Auto-fill
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </form>
+            {error && (
+              <div className="mt-3 flex items-start gap-2 text-sm text-danger bg-[var(--color-danger)]/5 border border-[var(--color-danger)]/20 rounded-md p-3">
+                <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+            <p className="text-xs text-faint mt-3 leading-relaxed">
+              Heads up: Rightmove and Zoopla aggressively block automated
+              fetching. If auto-fill doesn&apos;t work, use manual entry —
+              it&apos;s only six fields.
+            </p>
             <button
               type="button"
               onClick={onUseManual}
