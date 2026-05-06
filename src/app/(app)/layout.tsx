@@ -59,6 +59,12 @@ export default async function AppLayout({
             >
               Deals
             </Link>
+            <Link
+              href="/billing"
+              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+            >
+              Billing
+            </Link>
             {profile?.is_admin && (
               <Link
                 href="/admin"

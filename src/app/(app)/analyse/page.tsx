@@ -123,6 +123,10 @@ export default function AnalysePage() {
     });
     if (!res.ok) {
       const j = await res.json().catch(() => ({}));
+      if (j.code === "QUOTA_EXCEEDED") {
+        router.push("/billing?reason=quota");
+        return;
+      }
       setTopError(j.error ?? "Something went wrong. Please try again.");
       setSubmitting(false);
       return;

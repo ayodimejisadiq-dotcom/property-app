@@ -177,19 +177,24 @@ function UsageChip({ used, quota }: { used: number; quota: number }) {
   const ratio = used / quota;
   const tone =
     ratio >= 1
-      ? "bg-[var(--color-danger)]/10 text-[var(--color-danger)]"
+      ? "bg-[var(--color-danger)]/10 text-[var(--color-danger)] hover:bg-[var(--color-danger)]/15"
       : ratio >= 0.8
-        ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)]"
-        : "bg-fill text-muted";
+        ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/15"
+        : "bg-fill text-muted hover:bg-line";
+  const label =
+    ratio >= 1
+      ? `Quota reached — upgrade for more`
+      : `${used} of ${quota} free reports used this month`;
   return (
-    <span
+    <Link
+      href="/billing"
       className={cn(
-        "text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap",
+        "text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap transition-colors",
         tone,
       )}
     >
-      {used} of {quota} free reports used this month
-    </span>
+      {label}
+    </Link>
   );
 }
 
