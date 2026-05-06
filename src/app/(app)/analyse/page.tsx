@@ -454,15 +454,17 @@ function SectionHeader({
 }) {
   return (
     <div className="flex items-start justify-between mb-4 gap-3">
-      <div>
-        <h2 className="font-semibold text-ink">{title}</h2>
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h2 className="font-semibold text-ink">{title}</h2>
+          {badge && (
+            <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)]">
+              {badge}
+            </span>
+          )}
+        </div>
         {hint && <p className="text-xs text-muted mt-0.5">{hint}</p>}
       </div>
-      {badge && (
-        <span className="text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] whitespace-nowrap">
-          {badge}
-        </span>
-      )}
     </div>
   );
 }

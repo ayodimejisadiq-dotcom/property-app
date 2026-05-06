@@ -5,6 +5,7 @@ import { Check, Copy, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/toast";
 
 export function ReferralBlock({
   code,
@@ -17,6 +18,7 @@ export function ReferralBlock({
 }) {
   const link = `${origin}/signup?ref=${code}`;
   const [copied, setCopied] = useState<"link" | "code" | null>(null);
+  const toast = useToast();
 
   useEffect(() => {
     if (!copied) return;
@@ -28,8 +30,9 @@ export function ReferralBlock({
     try {
       await navigator.clipboard.writeText(value);
       setCopied(which);
+      toast.show(which === "code" ? "Code copied" : "Link copied", "success");
     } catch {
-      // ignore
+      toast.show("Couldn't copy. Long-press to select.", "error");
     }
   }
 

@@ -2,8 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/app/Logo";
+import { AppNav } from "@/components/app/AppNav";
 import { PendingReferralApplier } from "@/components/app/PendingReferralApplier";
-import { Button } from "@/components/ui/button";
 
 async function signOut() {
   "use server";
@@ -12,6 +12,14 @@ async function signOut() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+const NAV_ITEMS = [
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/analyse", label: "Analyse" },
+  { href: "/deals", label: "Deals" },
+  { href: "/billing", label: "Billing" },
+  { href: "/profile", label: "Profile" },
+];
 
 export default async function AppLayout({
   children,
@@ -36,62 +44,22 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b border-line bg-white">
+      <header className="border-b border-line bg-white sticky top-0 z-30">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link href="/dashboard">
+          <Link href="/dashboard" className="flex items-center">
             <Logo size="sm" />
           </Link>
-          <nav className="flex items-center gap-1 text-sm">
-            <Link
-              href="/dashboard"
-              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-            >
-              Dashboard
-            </Link>
-            <Link
-              href="/analyse"
-              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-            >
-              Analyse
-            </Link>
-            <Link
-              href="/deals"
-              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-            >
-              Deals
-            </Link>
-            <Link
-              href="/billing"
-              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-            >
-              Billing
-            </Link>
-            <Link
-              href="/profile"
-              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-            >
-              Profile
-            </Link>
-            {profile?.is_admin && (
-              <Link
-                href="/admin"
-                className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
-              >
-                Admin
-              </Link>
-            )}
-            <form action={signOut}>
-              <Button variant="ghost" size="sm" type="submit">
-                Sign out
-              </Button>
-            </form>
-          </nav>
+          <AppNav
+            items={NAV_ITEMS}
+            isAdmin={!!profile?.is_admin}
+            signOutAction={signOut}
+          />
         </div>
       </header>
       <PendingReferralApplier
         alreadyReferred={!!profile?.referred_by_user_id}
       />
-      <main className="flex-1 bg-fill">{children}</main>
+      <main className="flex-1 bg-fill safe-bottom">{children}</main>
     </div>
   );
 }
