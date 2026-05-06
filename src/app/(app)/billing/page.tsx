@@ -28,7 +28,7 @@ const TIERS = [
   {
     key: "investor",
     name: "Investor",
-    price: "£19",
+    price: "£39",
     cadence: "per month",
     blurb: "For active landlords sourcing more than a few deals.",
     cta: "Join waitlist",
@@ -43,7 +43,7 @@ const TIERS = [
   {
     key: "pro",
     name: "Pro",
-    price: "£49",
+    price: "£99",
     cadence: "per month",
     blurb: "For pros and small portfolios doing volume.",
     cta: "Join waitlist",
@@ -58,7 +58,7 @@ const TIERS = [
   {
     key: "portfolio",
     name: "Portfolio",
-    price: "£99",
+    price: "£199",
     cadence: "per month",
     blurb: "Teams managing 10+ properties.",
     cta: "Join waitlist",

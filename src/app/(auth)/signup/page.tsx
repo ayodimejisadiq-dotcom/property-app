@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -35,11 +36,31 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 export default function SignupPage() {
+  return (
+    <Suspense fallback={null}>
+      <SignupForm />
+    </Suspense>
+  );
+}
+
+function SignupForm() {
+  const searchParams = useSearchParams();
+  const refCode = searchParams.get("ref")?.toUpperCase() ?? null;
   const [error, setError] = useState<string | null>(null);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
   const [resentAt, setResentAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!refCode) return;
+    if (!/^[A-Z0-9]{4,12}$/.test(refCode)) return;
+    try {
+      sessionStorage.setItem("pendingReferral", refCode);
+    } catch {
+      /* noop */
+    }
+  }, [refCode]);
   const {
     register,
     handleSubmit,

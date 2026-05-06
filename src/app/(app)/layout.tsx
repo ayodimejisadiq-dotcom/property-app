@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Logo } from "@/components/app/Logo";
+import { PendingReferralApplier } from "@/components/app/PendingReferralApplier";
 import { Button } from "@/components/ui/button";
 
 async function signOut() {
@@ -25,7 +26,7 @@ export default async function AppLayout({
 
   const { data: profile } = await supabase
     .from("users")
-    .select("email, is_admin, disclaimer_accepted_at")
+    .select("email, is_admin, disclaimer_accepted_at, referred_by_user_id")
     .eq("id", user.id)
     .single();
 
@@ -65,6 +66,12 @@ export default async function AppLayout({
             >
               Billing
             </Link>
+            <Link
+              href="/profile"
+              className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
+            >
+              Profile
+            </Link>
             {profile?.is_admin && (
               <Link
                 href="/admin"
@@ -81,6 +88,9 @@ export default async function AppLayout({
           </nav>
         </div>
       </header>
+      <PendingReferralApplier
+        alreadyReferred={!!profile?.referred_by_user_id}
+      />
       <main className="flex-1 bg-fill">{children}</main>
     </div>
   );
