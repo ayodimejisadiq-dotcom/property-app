@@ -20,6 +20,8 @@ const TIERS = [
     features: [
       `${FREE_TIER_MONTHLY_DEALS} deal reports a month`,
       "All seven factor scores",
+      "Pre-tax cashflow + basic-rate post-tax estimate",
+      "5-year capital-growth projection",
       "AI-written deal report",
       "PDF export",
     ],
@@ -34,6 +36,8 @@ const TIERS = [
     cta: "Join waitlist",
     features: [
       "25 deal reports a month",
+      "Tunable cost assumptions (insurance, maintenance %, voids)",
+      "Mortgage product fee in acquisition costs",
       "Refurb scan (photos → cost estimate)",
       "Save deal comparisons",
       "Priority email support",
@@ -49,8 +53,10 @@ const TIERS = [
     cta: "Join waitlist",
     features: [
       "Unlimited deal reports",
+      "Full Section 24 tax model (basic / higher / additional rate)",
+      "Sensitivity analysis (rate shocks, rent drops, void scenarios)",
       "Mortgage stress-testing",
-      "Drill-down factor reasoning",
+      "Drill-down factor reasoning with raw inputs",
       "Bulk URL import",
     ],
     highlight: false,
@@ -64,8 +70,10 @@ const TIERS = [
     cta: "Join waitlist",
     features: [
       "Everything in Pro",
+      "Portfolio-level cashflow & equity dashboard",
+      "Multi-deal comparisons + ranking",
+      "What-if scenario builder (hold vs sell, refinance timing)",
       "Up to 5 team seats",
-      "Portfolio dashboard",
       "API access (read-only)",
     ],
     highlight: false,
