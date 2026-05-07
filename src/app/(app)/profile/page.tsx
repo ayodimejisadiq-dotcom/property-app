@@ -5,7 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ReferralBlock } from "./profile-client";
 
 async function resolveOrigin(): Promise<string> {
-  if (process.env.NEXT_PUBLIC_APP_URL) return process.env.NEXT_PUBLIC_APP_URL;
+  const raw = process.env.NEXT_PUBLIC_APP_URL;
+  if (raw) {
+    return /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+  }
   const h = await headers();
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";
