@@ -390,9 +390,9 @@ function UrlPasteTab({
           <div className="flex-1">
             <h2 className="font-semibold text-ink">Auto-fill from URL</h2>
             <p className="text-sm text-muted mt-1 max-w-xl">
-              Paste a Rightmove or Zoopla link. We&apos;ll pre-fill the address,
-              postcode, price, beds and property type — review them and add the
-              expected rent on the next step.
+              Paste a Rightmove, Zoopla or OnTheMarket link. We&apos;ll have
+              GPT-4 read the listing and pre-fill address, postcode, price,
+              beds and property type. Takes about 5–10 seconds.
             </p>
             <form onSubmit={autofill} className="mt-4 flex flex-col sm:flex-row gap-3">
               <Input
@@ -424,9 +424,8 @@ function UrlPasteTab({
               </div>
             )}
             <p className="text-xs text-faint mt-3 leading-relaxed">
-              Heads up: Rightmove and Zoopla aggressively block automated
-              fetching. If auto-fill doesn&apos;t work, use manual entry —
-              it&apos;s only six fields.
+              If the listing&apos;s behind a login or auto-fill misreads
+              anything, switch to manual — it&apos;s only six fields.
             </p>
             <button
               type="button"
