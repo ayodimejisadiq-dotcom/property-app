@@ -136,13 +136,35 @@ export default function AnalysePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-ink">Analyse a deal</h1>
-        <p className="text-muted mt-1">
-          Paste a Rightmove or Zoopla URL — or enter the property details
-          manually. We&apos;ll score the deal and write a report.
-        </p>
+    <div className="max-w-4xl mx-auto px-4 py-8 md:py-10">
+      <div
+        className="mb-6 rounded-xl text-white p-6 md:p-7 relative overflow-hidden shadow-md"
+        style={{ background: "var(--gradient-primary)" }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/15 blur-2xl"
+        />
+        <div className="relative">
+          <span className="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/15 mb-2">
+            New deal
+          </span>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Analyse a deal
+          </h1>
+          <p className="text-white/85 mt-1.5 max-w-xl text-sm md:text-base">
+            Paste a Rightmove or Zoopla URL — or enter the property details
+            manually. We&apos;ll score the deal across seven factors and write
+            a plain-English report.
+          </p>
+          <div className="mt-3 flex items-center gap-3 flex-wrap text-xs text-white/80">
+            <span className="inline-flex items-center gap-1">
+              ⚡ ~30 seconds
+            </span>
+            <span className="opacity-50">·</span>
+            <span>Free tier: 5 reports / month</span>
+          </div>
+        </div>
       </div>
 
       <Tabs value={tab} onValueChange={setTab}>
@@ -390,9 +412,9 @@ function UrlPasteTab({
           <div className="flex-1">
             <h2 className="font-semibold text-ink">Auto-fill from URL</h2>
             <p className="text-sm text-muted mt-1 max-w-xl">
-              Paste a Rightmove, Zoopla or OnTheMarket link. We&apos;ll have
-              GPT-4 read the listing and pre-fill address, postcode, price,
-              beds and property type. Takes about 5–10 seconds.
+              Paste a Rightmove, Zoopla or OnTheMarket link. Our AI reads the
+              listing and pre-fills address, postcode, price, beds and property
+              type. Takes about 5–10 seconds.
             </p>
             <form onSubmit={autofill} className="mt-4 flex flex-col sm:flex-row gap-3">
               <Input
@@ -482,7 +504,6 @@ function Field({
   children: React.ReactNode;
 }) {
   const id = React.useId();
-  // attach label to the first child via aria-labelledby
   return (
     <div className={"space-y-1.5 " + (className ?? "")}>
       <Label htmlFor={id}>{label}</Label>
