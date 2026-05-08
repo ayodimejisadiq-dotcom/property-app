@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
+import { AnnouncementBar } from "@/components/app/AnnouncementBar";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -68,7 +69,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-body">
-        <ToastProvider>{children}</ToastProvider>
+        <ToastProvider>
+          <AnnouncementBar
+            message={
+              <>
+                <span className="font-semibold">Free during early access</span>
+                <span className="opacity-80"> — 5 reports a month, no card.</span>
+              </>
+            }
+            href="/billing"
+            ctaLabel="See plans"
+          />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );
