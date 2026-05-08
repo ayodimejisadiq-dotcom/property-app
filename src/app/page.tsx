@@ -19,6 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/app/Logo";
+import { Blob, GridPattern } from "@/components/app/Decor";
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -66,24 +67,36 @@ function PublicNav() {
 
 function Hero() {
   return (
-    <section className="border-b border-line bg-gradient-to-b from-[var(--color-primary-light)]/40 to-white">
-      <div className="max-w-6xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+    <section
+      className="relative border-b border-line overflow-hidden"
+      style={{ background: "var(--gradient-hero)" }}
+    >
+      <Blob className="-top-24 -left-24 h-72 w-72" color="var(--color-primary)" />
+      <Blob className="-bottom-24 -right-24 h-80 w-80" color="var(--color-accent)" />
+      <GridPattern className="text-[var(--color-primary)]/30" opacity={0.35} />
+      <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-white border border-line text-muted">
-            <Sparkles className="h-3 w-3 text-[var(--color-primary)]" />
-            UK BTL deal analyser
+          <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm border border-line text-[var(--color-primary)]">
+            <Sparkles className="h-3 w-3" />
+            UK BTL deal analyser · early access
           </span>
-          <h1 className="mt-4 text-4xl md:text-5xl font-bold text-ink tracking-tight leading-[1.1]">
-            Score property deals in seconds.
+          <h1 className="mt-4 text-4xl md:text-6xl font-bold text-ink tracking-tight leading-[1.05]">
+            Score property deals{" "}
+            <span
+              className="bg-clip-text text-transparent"
+              style={{ backgroundImage: "var(--gradient-primary)" }}
+            >
+              in seconds.
+            </span>
           </h1>
-          <p className="mt-5 text-lg text-body leading-relaxed">
-            A second opinion on every UK BTL deal. Paste a Rightmove link, get a
-            0–100 score across the seven factors that actually matter — plus a
-            plain-English report you can take to your broker.
+          <p className="mt-5 text-lg text-body leading-relaxed max-w-lg">
+            A second opinion on every UK BTL deal. Paste a Rightmove link, get
+            a 0–100 score across the seven factors that actually matter — plus
+            a plain-English report you can take to your broker.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup">
-              <Button size="lg">
+              <Button size="lg" className="shadow-md">
                 Get started free
                 <ArrowRight className="h-4 w-4" />
               </Button>
@@ -198,37 +211,65 @@ function WhatYouGet() {
       icon: Gauge,
       title: "A 0–100 deal score",
       body: "Weighted across yield, growth, demand, refinance potential, BMV, tenant stability, and licensing risk.",
+      tone: "primary" as const,
     },
     {
       icon: ScrollText,
       title: "A plain-English report",
       body: "Strengths and concerns written for humans, not spreadsheets. Take it to your broker or partner.",
+      tone: "accent" as const,
     },
     {
       icon: Database,
       title: "Real UK data",
       body: "Land Registry, ONS Census, council licensing registers. Sources cited, never invented.",
+      tone: "warning" as const,
     },
   ];
   return (
     <section className="border-b border-line">
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <h2 className="text-2xl md:text-3xl font-bold text-ink text-center">
-          One score. Seven factors. No fluff.
-        </h2>
-        <div className="mt-10 grid md:grid-cols-3 gap-6">
-          {items.map(({ icon: Icon, title, body }) => (
-            <div
-              key={title}
-              className="rounded-lg border border-line p-6 bg-white"
-            >
-              <div className="h-10 w-10 rounded-lg bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center">
-                <Icon className="h-5 w-5" />
+      <div className="max-w-6xl mx-auto px-4 py-16 md:py-20">
+        <div className="text-center max-w-2xl mx-auto">
+          <span className="inline-block text-xs font-semibold uppercase tracking-wider text-[var(--color-primary)] mb-3">
+            What you get
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-ink tracking-tight">
+            One score. Seven factors. No fluff.
+          </h2>
+        </div>
+        <div className="mt-12 grid md:grid-cols-3 gap-6">
+          {items.map(({ icon: Icon, title, body, tone }) => {
+            const ringColour =
+              tone === "primary"
+                ? "from-[var(--color-primary)] to-[var(--color-accent)]"
+                : tone === "accent"
+                  ? "from-[var(--color-accent)] to-[var(--color-primary)]"
+                  : "from-[var(--color-warning)] to-[var(--color-primary)]";
+            const iconBg =
+              tone === "primary"
+                ? "bg-[var(--color-primary-light)] text-[var(--color-primary)]"
+                : tone === "accent"
+                  ? "bg-[var(--color-accent-light)] text-[var(--color-accent-dark)]"
+                  : "bg-[var(--color-warning-light)] text-[var(--color-warning)]";
+            return (
+              <div
+                key={title}
+                className="group relative rounded-xl bg-white border border-line p-6 hover:shadow-md transition-shadow"
+              >
+                <div
+                  className={`absolute inset-x-6 top-0 h-1 rounded-b-full bg-gradient-to-r ${ringColour} opacity-70`}
+                  aria-hidden
+                />
+                <div
+                  className={`h-11 w-11 rounded-xl flex items-center justify-center ${iconBg}`}
+                >
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-semibold text-ink text-lg">{title}</h3>
+                <p className="mt-2 text-sm text-body leading-relaxed">{body}</p>
               </div>
-              <h3 className="mt-4 font-semibold text-ink">{title}</h3>
-              <p className="mt-2 text-sm text-body leading-relaxed">{body}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -581,23 +622,41 @@ function Pricing() {
 function FinalCTA() {
   return (
     <section className="border-b border-line">
-      <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <FileText className="h-10 w-10 text-[var(--color-primary)] mx-auto mb-4" />
-        <h2 className="text-3xl md:text-4xl font-bold text-ink tracking-tight">
-          Run your next deal through Dealscope first.
-        </h2>
-        <p className="mt-4 text-body">
-          Five reports a month, free. No card. Two minutes to set up.
-        </p>
-        <div className="mt-8 flex justify-center gap-3">
-          <Link href="/signup">
-            <Button size="lg">Get started</Button>
-          </Link>
-          <Link href="/login">
-            <Button size="lg" variant="outline">
-              Sign in
-            </Button>
-          </Link>
+      <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
+        <div
+          className="relative rounded-2xl overflow-hidden text-center px-6 py-16 md:py-20 text-white"
+          style={{ background: "var(--gradient-primary)" }}
+        >
+          <Blob className="-top-20 -left-10 h-60 w-60 opacity-20" color="white" />
+          <Blob className="-bottom-20 -right-10 h-72 w-72 opacity-20" color="white" />
+          <div className="relative">
+            <FileText className="h-10 w-10 mx-auto mb-4 opacity-90" />
+            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+              Run your next deal through Dealscope first.
+            </h2>
+            <p className="mt-4 text-white/80 max-w-md mx-auto">
+              Five reports a month, free. No card. Two minutes to set up.
+            </p>
+            <div className="mt-8 flex justify-center gap-3 flex-wrap">
+              <Link href="/signup">
+                <Button
+                  size="lg"
+                  className="bg-white text-[var(--color-primary)] hover:bg-white/90 shadow-md"
+                >
+                  Get started
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-white/40 text-white hover:bg-white/10"
+                >
+                  Sign in
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

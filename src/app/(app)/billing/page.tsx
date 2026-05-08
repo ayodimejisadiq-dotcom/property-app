@@ -146,20 +146,40 @@ export default async function BillingPage({
             <div
               key={t.key}
               className={cn(
-                "rounded-xl border bg-white p-6 flex flex-col",
+                "relative rounded-2xl bg-white p-6 flex flex-col transition",
                 t.highlight
-                  ? "border-[var(--color-primary)] shadow-md"
-                  : "border-line",
+                  ? "border-2 border-[var(--color-primary)] shadow-lg xl:scale-[1.02]"
+                  : "border border-line hover:border-[var(--color-primary)]/30",
               )}
             >
               {t.highlight && (
-                <span className="self-start text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-primary)] text-white mb-3">
+                <div
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-md"
+                  style={{ background: "var(--gradient-primary)" }}
+                >
                   Most popular
+                </div>
+              )}
+              {isCurrent && (
+                <span className="self-start text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-success)]/10 text-[var(--color-success)] mb-3">
+                  Current plan
                 </span>
               )}
               <h2 className="text-lg font-bold text-ink">{t.name}</h2>
               <div className="mt-2">
-                <span className="text-3xl font-bold text-ink">{t.price}</span>
+                <span
+                  className={cn(
+                    "text-4xl font-bold",
+                    t.highlight ? "bg-clip-text text-transparent" : "text-ink",
+                  )}
+                  style={
+                    t.highlight
+                      ? { backgroundImage: "var(--gradient-primary)" }
+                      : undefined
+                  }
+                >
+                  {t.price}
+                </span>
                 <span className="text-sm text-muted ml-1">{t.cadence}</span>
               </div>
               <p className="text-sm text-body mt-3 leading-relaxed">
@@ -170,7 +190,7 @@ export default async function BillingPage({
                 {t.features.map((f) => (
                   <li key={f} className="flex gap-2 text-body">
                     <Check className="h-4 w-4 text-[var(--color-success)] mt-0.5 shrink-0" />
-                    {f}
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
@@ -191,7 +211,10 @@ export default async function BillingPage({
                   >
                     <Button
                       variant={t.highlight ? "primary" : "outline"}
-                      className="w-full"
+                      className={cn(
+                        "w-full",
+                        t.highlight && "shadow-md",
+                      )}
                     >
                       {t.cta}
                     </Button>
