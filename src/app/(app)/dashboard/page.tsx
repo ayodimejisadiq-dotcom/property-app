@@ -12,6 +12,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { PromoCard } from "@/components/app/PromoCard";
 import { cn, scoreBand, bandColor } from "@/lib/utils";
 import { FREE_TIER_MONTHLY_DEALS } from "@/lib/constants";
 
@@ -168,7 +169,23 @@ export default async function DashboardPage() {
         />
       </div>
 
-      {totalDeals === 0 ? <EmptyState /> : <RecentDeals deals={recent} />}
+      {totalDeals === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="space-y-6">
+          <RecentDeals deals={recent} />
+          {totalDeals > 0 && totalDeals < 3 && (
+            <PromoCard
+              eyebrow="Spread the word"
+              title="Refer a fellow landlord, both win."
+              body="Share your code from your profile. When paid plans launch, every referral earns you a credit on top of your tier."
+              ctaLabel="Get your link"
+              ctaHref="/profile"
+              tone="accent"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
