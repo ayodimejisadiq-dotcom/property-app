@@ -212,8 +212,6 @@ export default async function DealPage({
 
   if (!deal) notFound();
 
-  // Recompute financials so we can show the line-item breakdowns even
-  // though the deal stores only summary numbers.
   const fin = computeFinancials({
     pricePence: deal.price,
     monthlyRentPence: deal.monthly_rent,
@@ -234,7 +232,6 @@ export default async function DealPage({
   const loanPence = Math.round(deal.price * (1 - deal.deposit_percent / 100));
   const depositPence = deal.price - loanPence;
 
-  // 5-year projection at 3%/yr growth (same assumption as refinance scoring)
   const ANNUAL_GROWTH = 0.03;
   const projection = [1, 3, 5].map((year) => {
     const value = Math.round(deal.price * Math.pow(1 + ANNUAL_GROWTH, year));
@@ -242,7 +239,7 @@ export default async function DealPage({
     const equityIncOriginal = value - loanPence;
     const cumulativeCashflow = annualCashflow * year;
     const totalReturn =
-      cumulativeCashflow + equityFromGrowth - depositPence + depositPence; // total return ex deposit recovery
+      cumulativeCashflow + equityFromGrowth - depositPence + depositPence;
     return {
       year,
       value,
@@ -284,8 +281,12 @@ export default async function DealPage({
         Back to dashboard
       </Link>
 
-      {/* Header */}
       <div className="rounded-xl border border-line bg-white shadow-sm overflow-hidden">
+        <div
+          className="h-1.5 w-full"
+          style={{ background: "var(--gradient-primary)" }}
+          aria-hidden
+        />
         <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           <div className="min-w-0">
             <p className="text-sm text-muted">{deal.postcode}</p>
@@ -328,7 +329,6 @@ export default async function DealPage({
         </div>
       </div>
 
-      {/* Headline metrics strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <Headline
           icon={PoundSterling}
@@ -356,7 +356,6 @@ export default async function DealPage({
         />
       </div>
 
-      {/* Listing details */}
       <Section title="Property & mortgage assumptions">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
           <KV label="Asking price" value={formatGBP(deal.price)} />
@@ -387,7 +386,6 @@ export default async function DealPage({
         </div>
       </Section>
 
-      {/* Annual cashflow breakdown */}
       <Section title="Annual cashflow breakdown">
         <div className="space-y-2">
           <Row
@@ -439,7 +437,6 @@ export default async function DealPage({
         </div>
       </Section>
 
-      {/* Acquisition cost breakdown */}
       <Section title="Cash needed to acquire">
         <div className="space-y-2">
           <Row
@@ -473,7 +470,6 @@ export default async function DealPage({
         </div>
       </Section>
 
-      {/* 5-year projection */}
       <Section
         title="5-year projection"
         hint="Assumes 3%/yr capital growth and constant operating costs. Illustrative."
@@ -526,7 +522,6 @@ export default async function DealPage({
         </div>
       </Section>
 
-      {/* Investment factors */}
       <Section
         title="Investment factors"
         hint="Tap any row for the inputs we used (V1.2)."
@@ -583,7 +578,6 @@ export default async function DealPage({
         )}
       </Section>
 
-      {/* AI report */}
       <div className="rounded-xl border border-line bg-card p-6 md:p-8">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
           <p className="text-xs uppercase tracking-wider text-muted">
