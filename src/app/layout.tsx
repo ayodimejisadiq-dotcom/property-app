@@ -1,16 +1,66 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ToastProvider } from "@/components/ui/toast";
+import { AnnouncementBar } from "@/components/app/AnnouncementBar";
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
 });
 
+const RAW_SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://dealscope.app";
+const SITE_URL = /^https?:\/\//i.test(RAW_SITE_URL)
+  ? RAW_SITE_URL
+  : `https://${RAW_SITE_URL}`;
+
 export const metadata: Metadata = {
-  title: "Dealscope — Score property deals in seconds",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Dealscope — Score property deals in seconds",
+    template: "%s · Dealscope",
+  },
   description:
-    "Analytical scoring tool for UK BTL investors. Not financial advice.",
+    "A 0–100 score and plain-English report on every UK BTL deal. Built for landlords, not algorithms. Not financial advice.",
+  applicationName: "Dealscope",
+  keywords: [
+    "UK property",
+    "BTL",
+    "buy to let",
+    "deal analyser",
+    "property investment",
+    "Rightmove",
+    "Zoopla",
+  ],
+  authors: [{ name: "Daramola Consulting" }],
+  openGraph: {
+    type: "website",
+    title: "Dealscope — Score property deals in seconds",
+    description:
+      "A 0–100 score and plain-English report on every UK BTL deal. Five reports a month, free.",
+    siteName: "Dealscope",
+    locale: "en_GB",
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dealscope — Score property deals in seconds",
+    description:
+      "A 0–100 score on every UK BTL deal. Built for landlords, not algorithms.",
+  },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#4F46E5",
 };
 
 export default function RootLayout({
@@ -19,7 +69,19 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-body">
-        {children}
+        <ToastProvider>
+          <AnnouncementBar
+            message={
+              <>
+                <span className="font-semibold">Free during early access</span>
+                <span className="opacity-80"> — 5 reports a month, no card.</span>
+              </>
+            }
+            href="/billing"
+            ctaLabel="See plans"
+          />
+          {children}
+        </ToastProvider>
       </body>
     </html>
   );

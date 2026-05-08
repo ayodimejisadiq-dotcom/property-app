@@ -1,0 +1,132 @@
+{
+  "_about": "Top UK BTL cities and their selective / additional / HMO licensing schemes. Postcode prefixes use outward codes (e.g. 'M14'). Sources cited per city. Verify before each licensing renewal cycle.",
+  "_lastReviewed": "2026-04",
+  "_schemes": {
+    "SELECTIVE": "Selective licensing applies to most or all PRS lets in the area",
+    "ADDITIONAL": "Additional licensing for smaller HMOs (e.g. 3+ unrelated tenants)",
+    "HMO": "Mandatory HMO licensing (5+ unrelated tenants in 2+ households)",
+    "NONE": "No licensing required beyond mandatory HMO"
+  },
+  "cities": [
+    {
+      "city": "Manchester",
+      "prefixes": ["M14", "M15", "M16", "M19", "M21"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "manchester.gov.uk/info/200117/private_renting"
+    },
+    {
+      "city": "Liverpool",
+      "prefixes": ["L1", "L4", "L5", "L6", "L7", "L8", "L13", "L15"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "liverpool.gov.uk/business/licences-and-permits/property-licensing"
+    },
+    {
+      "city": "Birmingham",
+      "prefixes": ["B5", "B11", "B12", "B16", "B18"],
+      "schemes": ["SELECTIVE", "HMO"],
+      "source": "birmingham.gov.uk/info/20015/private_rented_homes"
+    },
+    {
+      "city": "Leeds",
+      "prefixes": ["LS6", "LS4"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "leeds.gov.uk/housing/private-renters-and-landlords/houses-in-multiple-occupation"
+    },
+    {
+      "city": "Sheffield",
+      "prefixes": ["S2", "S3", "S4", "S6", "S7", "S10"],
+      "schemes": ["ADDITIONAL", "HMO"],
+      "source": "sheffield.gov.uk/housing/property-licensing-landlords"
+    },
+    {
+      "city": "Nottingham",
+      "prefixes": ["NG1", "NG3", "NG5", "NG7", "NG8"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "nottinghamcity.gov.uk/information-for-residents/housing/private-rented-properties"
+    },
+    {
+      "city": "Newcastle",
+      "prefixes": ["NE1", "NE2", "NE4", "NE6"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "newcastle.gov.uk/services/housing/landlords-and-tenants"
+    },
+    {
+      "city": "Bristol",
+      "prefixes": ["BS5", "BS3", "BS2"],
+      "schemes": ["ADDITIONAL", "HMO"],
+      "source": "bristol.gov.uk/residents/housing/landlords-and-letting/property-licensing"
+    },
+    {
+      "city": "Cardiff",
+      "prefixes": ["CF10", "CF24", "CF11"],
+      "schemes": ["HMO"],
+      "source": "rentsmart.gov.wales"
+    },
+    {
+      "city": "London — Newham",
+      "prefixes": ["E13", "E15", "E16", "E6", "E7"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "newham.gov.uk/housing-homes/property-licensing-newham"
+    },
+    {
+      "city": "London — Waltham Forest",
+      "prefixes": ["E10", "E11", "E17", "E4"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "walthamforest.gov.uk/housing/private-renting/private-property-licensing"
+    },
+    {
+      "city": "London — Croydon",
+      "prefixes": ["CR0", "CR2", "CR4", "CR7"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "croydon.gov.uk/housing/landlords-and-private-renters/property-licences"
+    },
+    {
+      "city": "London — Hackney",
+      "prefixes": ["E5", "E8", "E9", "N1", "N16"],
+      "schemes": ["ADDITIONAL", "HMO"],
+      "source": "hackney.gov.uk/property-licensing"
+    },
+    {
+      "city": "London — Tower Hamlets",
+      "prefixes": ["E1", "E2", "E3", "E14"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "towerhamlets.gov.uk/lgnl/housing/landlords/Property_licensing"
+    },
+    {
+      "city": "Brighton & Hove",
+      "prefixes": ["BN1", "BN2", "BN3"],
+      "schemes": ["ADDITIONAL", "HMO"],
+      "source": "brighton-hove.gov.uk/housing/private-renting/houses-multiple-occupation-hmo"
+    },
+    {
+      "city": "Coventry",
+      "prefixes": ["CV1", "CV4", "CV5"],
+      "schemes": ["ADDITIONAL", "HMO"],
+      "source": "coventry.gov.uk/housing-32/private-rented-housing"
+    },
+    {
+      "city": "Salford",
+      "prefixes": ["M3", "M5", "M6", "M7"],
+      "schemes": ["SELECTIVE", "ADDITIONAL", "HMO"],
+      "source": "salford.gov.uk/housing/private-tenants-and-landlords/landlord-licensing"
+    },
+    {
+      "city": "Bradford",
+      "prefixes": ["BD1", "BD3", "BD7", "BD8"],
+      "schemes": ["SELECTIVE", "HMO"],
+      "source": "bradford.gov.uk/housing/landlords-and-property-licensing/selective-licensing"
+    },
+    {
+      "city": "Stoke-on-Trent",
+      "prefixes": ["ST1", "ST3", "ST6"],
+      "schemes": ["SELECTIVE", "HMO"],
+      "source": "stoke.gov.uk/info/20020/private_landlords"
+    },
+    {
+      "city": "Hull",
+      "prefixes": ["HU1", "HU3", "HU5"],
+      "schemes": ["SELECTIVE", "HMO"],
+      "source": "hull.gov.uk/housing/private-housing/private-rented-housing"
+    }
+  ]
+}

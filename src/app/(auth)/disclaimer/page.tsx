@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertTriangle } from "lucide-react";
+import { Logo } from "@/components/app/Logo";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -10,24 +11,24 @@ import { CURRENT_DISCLAIMER_VERSION } from "@/lib/constants";
 
 const POINTS = [
   {
-    title: "Not financial advice",
+    title: "It's not financial advice",
     body:
-      "Scores and reports are for research only, not a recommendation to buy, sell or finance property.",
+      "Scores and reports are for research only — not a recommendation to buy, sell or finance any property.",
   },
   {
-    title: "Do your own due diligence",
+    title: "Always do your own due diligence",
     body:
-      "Always commission a survey, valuation and legal review. Consult a qualified mortgage broker.",
+      "Commission a survey, valuation and legal review. Talk to a qualified mortgage broker before you commit.",
   },
   {
-    title: "Data has limitations",
+    title: "The data has limits",
     body:
-      "Estimates rely on third-party sources (Land Registry, ONS, councils) that may be incomplete or delayed.",
+      "Estimates use Land Registry, ONS and council sources that can be incomplete or delayed. We cite them so you can verify.",
   },
   {
-    title: "Your decisions, your responsibility",
+    title: "Your decisions are yours",
     body:
-      "Dealscope and Daramola Consulting accept no liability for investment outcomes.",
+      "Dealscope and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
   },
 ];
 
@@ -76,15 +77,19 @@ export default function DisclaimerPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-fill px-4 py-10">
       <div className="w-full max-w-2xl bg-white rounded-xl border border-line shadow-sm p-6 md:p-10">
+        <div className="flex justify-center mb-6">
+          <Logo size="md" />
+        </div>
         <div className="flex flex-col items-center text-center mb-6">
           <div className="h-12 w-12 rounded-full bg-[var(--color-warning)]/15 text-[var(--color-warning)] flex items-center justify-center mb-3">
             <AlertTriangle className="h-6 w-6" />
           </div>
           <h1 className="text-2xl font-bold text-ink">
-            Important — Read Before Continuing
+            One thing before you start
           </h1>
           <p className="text-muted mt-2">
-            Dealscope is an analytical tool, not a financial adviser.
+            Dealscope is an analytical tool — not a financial adviser. Please
+            read and acknowledge.
           </p>
         </div>
 
@@ -122,7 +127,7 @@ export default function DisclaimerPage() {
           size="lg"
           className="w-full"
         >
-          {loading ? "Saving…" : "I Understand — Continue"}
+          {loading ? "Saving…" : "I understand — take me in"}
         </Button>
       </div>
     </div>
