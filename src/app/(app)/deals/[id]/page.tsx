@@ -661,7 +661,13 @@ export default async function DealPage({
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <Button disabled>Export PDF (Phase 5)</Button>
+        <a
+          href={`/api/report/${deal.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button>Export PDF</Button>
+        </a>
         <Button variant="outline" disabled>
           Share link (V1.05)
         </Button>
