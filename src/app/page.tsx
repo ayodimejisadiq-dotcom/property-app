@@ -196,7 +196,7 @@ function ProblemStrip() {
           Most BTL investors decide on gut feel, an asking price, and a
           calculator from 2014.{" "}
           <span className="text-muted">
-            Dealscope replaces all three with seven measurable factors and the
+            Surge replaces all three with seven measurable factors and the
             data to back them up.
           </span>
         </p>
@@ -419,7 +419,7 @@ function SampleDeal() {
       <div className="max-w-6xl mx-auto px-4 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
-            What a Dealscope report looks like
+            What a Surge report looks like
           </h2>
           <p className="mt-3 text-body">
             A scored deal — straight to the point, sources cited, no
@@ -632,7 +632,7 @@ function FinalCTA() {
           <div className="relative">
             <FileText className="h-10 w-10 mx-auto mb-4 opacity-90" />
             <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
-              Run your next deal through Dealscope first.
+              Run your next deal through Surge first.
             </h2>
             <p className="mt-4 text-white/80 max-w-md mx-auto">
               Five reports a month, free. No card. Two minutes to set up.
@@ -674,7 +674,7 @@ function Footer() {
           </p>
         </div>
         <p className="text-xs italic text-faint leading-relaxed">
-          Dealscope is an analytical tool, not a financial adviser. Scores and
+          Surge is an analytical tool, not a financial adviser. Scores and
           reports are for research only and must not be treated as a
           recommendation to buy, sell or finance any property. Always commission
           a survey, valuation and legal review before any property transaction.
