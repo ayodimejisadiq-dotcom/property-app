@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 const RAW_SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://dealscope.app";
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://surge.app";
 const SITE_URL = /^https?:\/\//i.test(RAW_SITE_URL)
   ? RAW_SITE_URL
   : `https://${RAW_SITE_URL}`;
@@ -18,12 +18,12 @@ const SITE_URL = /^https?:\/\//i.test(RAW_SITE_URL)
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Dealscope — Score property deals in seconds",
-    template: "%s · Dealscope",
+    default: "Surge — Score property deals in seconds",
+    template: "%s · Surge",
   },
   description:
     "A 0–100 score and plain-English report on every UK BTL deal. Built for landlords, not algorithms. Not financial advice.",
-  applicationName: "Dealscope",
+  applicationName: "Surge",
   keywords: [
     "UK property",
     "BTL",
@@ -36,16 +36,16 @@ export const metadata: Metadata = {
   authors: [{ name: "Daramola Consulting" }],
   openGraph: {
     type: "website",
-    title: "Dealscope — Score property deals in seconds",
+    title: "Surge — Score property deals in seconds",
     description:
       "A 0–100 score and plain-English report on every UK BTL deal. Five reports a month, free.",
-    siteName: "Dealscope",
+    siteName: "Surge",
     locale: "en_GB",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dealscope — Score property deals in seconds",
+    title: "Surge — Score property deals in seconds",
     description:
       "A 0–100 score on every UK BTL deal. Built for landlords, not algorithms.",
   },
