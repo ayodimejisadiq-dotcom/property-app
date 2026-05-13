@@ -2,7 +2,7 @@ import { LegalSection, LegalShell } from "@/components/app/LegalShell";
 
 export const metadata = {
   title: "Privacy Policy",
-  description: "Privacy Policy for Dealscope.",
+  description: "Privacy Policy for Surge.",
 };
 
 export default function PrivacyPage() {
@@ -10,7 +10,7 @@ export default function PrivacyPage() {
     <LegalShell title="Privacy Policy" lastUpdated="8 May 2026">
       <p>
         This policy explains what personal data we collect when you use
-        Dealscope, how we use it, and the rights you have under UK GDPR.
+        Surge, how we use it, and the rights you have under UK GDPR.
         Daramola Consulting Ltd is the data controller.
       </p>
 
@@ -122,10 +122,10 @@ export default function PrivacyPage() {
         <p>
           To exercise any of these rights, email{" "}
           <a
-            href="mailto:privacy@dealscope.app"
+            href="mailto:privacy@surge.app"
             className="text-[var(--color-primary)] hover:underline"
           >
-            privacy@dealscope.app
+            privacy@surge.app
           </a>
           .
         </p>
@@ -133,7 +133,7 @@ export default function PrivacyPage() {
 
       <LegalSection id="cookies" title="6. Cookies">
         <p>
-          Dealscope uses only strictly-necessary cookies, set by Supabase
+          Surge uses only strictly-necessary cookies, set by Supabase
           Auth, to keep you signed in. We don&apos;t use third-party
           advertising or tracking cookies. If we add product analytics in
           the future we&apos;ll update this policy and ask for consent
@@ -153,7 +153,7 @@ export default function PrivacyPage() {
 
       <LegalSection id="children" title="8. Children">
         <p>
-          Dealscope is not intended for users under 18. We don&apos;t
+          Surge is not intended for users under 18. We don&apos;t
           knowingly collect personal data from children. If you believe a
           child has signed up, please contact us and we&apos;ll delete the
           account.
@@ -174,10 +174,10 @@ export default function PrivacyPage() {
           <br />
           Data Protection contact:{" "}
           <a
-            href="mailto:privacy@dealscope.app"
+            href="mailto:privacy@surge.app"
             className="text-[var(--color-primary)] hover:underline"
           >
-            privacy@dealscope.app
+            privacy@surge.app
           </a>
           .
         </p>

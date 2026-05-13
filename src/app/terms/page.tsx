@@ -2,14 +2,14 @@ import { LegalSection, LegalShell } from "@/components/app/LegalShell";
 
 export const metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Dealscope.",
+  description: "Terms of Service for Surge.",
 };
 
 export default function TermsPage() {
   return (
     <LegalShell title="Terms of Service" lastUpdated="8 May 2026">
       <p>
-        These terms set out how you can use Dealscope (&quot;the Service&quot;),
+        These terms set out how you can use Surge (&quot;the Service&quot;),
         operated by Daramola Consulting Ltd (&quot;we&quot;, &quot;us&quot;).
         By creating an account or using the Service you agree to be bound by
         these terms. If you don&apos;t agree, please don&apos;t use the
@@ -18,7 +18,7 @@ export default function TermsPage() {
 
       <LegalSection id="not-advice" title="1. Not financial advice">
         <p>
-          Dealscope is an <strong>analytical research tool</strong>. It is not a
+          Surge is an <strong>analytical research tool</strong>. It is not a
           regulated financial service and we are not authorised by the FCA. Our
           scores, reports, and figures are for research purposes only and must
           not be treated as a recommendation, advice, or instruction to buy,
@@ -50,7 +50,7 @@ export default function TermsPage() {
           </li>
           <li>
             Scrape, crawl, reverse-engineer, or otherwise extract bulk data
-            from Dealscope outside of the documented features.
+            from Surge outside of the documented features.
           </li>
           <li>
             Resell or commercially redistribute reports, scores, or data
@@ -75,7 +75,7 @@ export default function TermsPage() {
 
       <LegalSection id="ip" title="5. Intellectual property">
         <p>
-          The Dealscope name, logo, design, and methodology are owned by
+          The Surge name, logo, design, and methodology are owned by
           Daramola Consulting Ltd. The scores and reports you generate are
           yours to use for your own research and decision-making, including
           sharing them with brokers, accountants, and partners. You must not
@@ -94,7 +94,7 @@ export default function TermsPage() {
 
       <LegalSection id="pricing" title="7. Pricing and payment">
         <p>
-          During early access, Dealscope is free with a 5-report-per-month
+          During early access, Surge is free with a 5-report-per-month
           quota. Paid tiers will be introduced; you&apos;ll be notified before
           any subscription is activated on your account, and you won&apos;t be
           charged without explicit consent.
@@ -123,7 +123,7 @@ export default function TermsPage() {
           you paid us in the 12 months before the claim arose. We are not
           liable for investment losses, lost profits, lost deals, or
           consequential losses arising from your use of the Service. You use
-          Dealscope at your own risk.
+          Surge at your own risk.
         </p>
       </LegalSection>
 

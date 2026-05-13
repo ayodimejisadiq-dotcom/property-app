@@ -28,7 +28,7 @@ const POINTS = [
   {
     title: "Your decisions are yours",
     body:
-      "Dealscope and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
+      "Surge and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
   },
 ];
 
@@ -88,7 +88,7 @@ export default function DisclaimerPage() {
             One thing before you start
           </h1>
           <p className="text-muted mt-2">
-            Dealscope is an analytical tool — not a financial adviser. Please
+            Surge is an analytical tool — not a financial adviser. Please
             read and acknowledge.
           </p>
         </div>

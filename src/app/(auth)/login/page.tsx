@@ -56,7 +56,7 @@ export default function LoginPage() {
       <div className="rounded-2xl bg-white border border-line shadow-sm p-7 md:p-8">
         <h1 className="text-2xl font-bold text-ink">Welcome back</h1>
         <p className="text-sm text-muted mt-1">
-          Sign in to your Dealscope account.
+          Sign in to your Surge account.
         </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-6">
@@ -110,7 +110,7 @@ export default function LoginPage() {
         </form>
 
         <p className="text-sm text-muted text-center mt-6">
-          New to Dealscope?{" "}
+          New to Surge?{" "}
           <Link
             href="/signup"
             className="text-[var(--color-primary)] font-medium hover:underline"
