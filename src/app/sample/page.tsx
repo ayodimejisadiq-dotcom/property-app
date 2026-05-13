@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "Sample deal — Dealscope",
+  title: "Sample deal — Surge",
 };
 
 const FACTORS = [
@@ -66,7 +66,6 @@ export default async function SamplePage() {
         </div>
 
         <div className="rounded-xl border border-line bg-white shadow-sm overflow-hidden">
-          {/* Header */}
           <div className="p-6 md:p-8 border-b border-line flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
               <p className="text-sm text-muted">Levenshulme, Manchester · M19 3PT</p>
@@ -90,7 +89,6 @@ export default async function SamplePage() {
             </div>
           </div>
 
-          {/* Financials */}
           <div className="p-6 md:p-8 border-b border-line">
             <p className="text-xs uppercase tracking-wider text-muted mb-4">
               Financials
@@ -109,7 +107,6 @@ export default async function SamplePage() {
             </div>
           </div>
 
-          {/* Factors */}
           <div className="p-6 md:p-8 border-b border-line">
             <p className="text-xs uppercase tracking-wider text-muted mb-4">
               Investment factors
@@ -135,7 +132,6 @@ export default async function SamplePage() {
             </div>
           </div>
 
-          {/* Report */}
           <div className="p-6 md:p-8 grid md:grid-cols-2 gap-8">
             <div>
               <p className="text-xs uppercase tracking-wider text-muted mb-3">
@@ -173,7 +169,6 @@ export default async function SamplePage() {
             </div>
           </div>
 
-          {/* Summary */}
           <div className="p-6 md:p-8 bg-card border-t border-line">
             <p className="text-xs uppercase tracking-wider text-muted mb-2">
               Summary

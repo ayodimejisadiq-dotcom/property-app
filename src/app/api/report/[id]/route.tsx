@@ -34,7 +34,7 @@ export async function GET(
 
   const score = deal.composite_score ?? "x";
   const postcode = (deal.postcode ?? "").replace(/\s+/g, "");
-  const filename = `dealscope-${postcode || "report"}-${score}.pdf`;
+  const filename = `surge-${postcode || "report"}-${score}.pdf`;
 
   return new NextResponse(buffer as unknown as BodyInit, {
     status: 200,

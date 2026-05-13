@@ -40,7 +40,7 @@ export function ReferralBlock({
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: "Dealscope",
+          title: "Surge",
           text: "Score UK BTL deals in seconds. Free to try.",
           url: link,
         });
@@ -127,4 +127,3 @@ export function ReferralBlock({
     </div>
   );
 }
-
