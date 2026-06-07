@@ -84,6 +84,7 @@ export async function POST(req: Request) {
       .from("users")
       .update({
         deals_used_this_month: 0,
+        scrapes_used_this_month: 0,
         deals_quota_resets_at: next.toISOString(),
       })
       .eq("id", user.id);

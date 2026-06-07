@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = {
-  title: "Sample deal — Surge",
+  title: "Sample deal — Capora",
 };
 
 const FACTORS = [

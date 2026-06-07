@@ -308,8 +308,8 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
 
   return (
     <Document
-      title={`Surge · ${deal.postcode} · ${deal.composite_score ?? "—"}`}
-      author="Surge"
+      title={`Capora · ${deal.postcode} · ${deal.composite_score ?? "—"}`}
+      author="Capora"
     >
       <Page size="A4" style={styles.page}>
         <View style={[styles.band, { backgroundColor: bColour }]} />
@@ -335,7 +335,7 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
                 />
               </Svg>
             </View>
-            <Text style={styles.brandText}>surge</Text>
+            <Text style={styles.brandText}>capora</Text>
           </View>
           <View style={styles.reportMeta}>
             <Text>Deal report</Text>
@@ -456,7 +456,7 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
 
         <View style={styles.footer} fixed>
           <Text>
-            Surge is an analytical tool, not a financial adviser. Scores
+            Capora is an analytical tool, not a financial adviser. Scores
             and reports are for research only and must not be treated as a
             recommendation to buy, sell or finance any property. Always
             commission a survey, valuation and legal review before any

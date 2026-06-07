@@ -2,14 +2,14 @@ import { LegalSection, LegalShell } from "@/components/app/LegalShell";
 
 export const metadata = {
   title: "Terms of Service",
-  description: "Terms of Service for Surge.",
+  description: "Terms of Service for Capora.",
 };
 
 export default function TermsPage() {
   return (
     <LegalShell title="Terms of Service" lastUpdated="8 May 2026">
       <p>
-        These terms set out how you can use Surge (&quot;the Service&quot;),
+        These terms set out how you can use Capora (&quot;the Service&quot;),
         operated by Daramola Consulting Ltd (&quot;we&quot;, &quot;us&quot;).
         By creating an account or using the Service you agree to be bound by
         these terms. If you don&apos;t agree, please don&apos;t use the
@@ -18,7 +18,7 @@ export default function TermsPage() {
 
       <LegalSection id="not-advice" title="1. Not financial advice">
         <p>
-          Surge is an <strong>analytical research tool</strong>. It is not a
+          Capora is an <strong>analytical research tool</strong>. It is not a
           regulated financial service and we are not authorised by the FCA. Our
           scores, reports, and figures are for research purposes only and must
           not be treated as a recommendation, advice, or instruction to buy,
@@ -28,7 +28,53 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="accounts" title="2. Your account">
+      <LegalSection id="dyod" title="2. Do Your Own Due Diligence (DYOD)">
+        <p>
+          By using Capora you expressly acknowledge that{" "}
+          <strong>
+            you will perform your own due diligence on every property
+          </strong>{" "}
+          before making any decision, offer, or financial commitment. Our scores
+          and reports are a starting point for your research, not a replacement
+          for it. At minimum, &quot;your own due diligence&quot; means you will:
+        </p>
+        <ul className="list-disc pl-6 space-y-1.5">
+          <li>
+            Commission an independent <strong>RICS survey</strong> (Level 2 or
+            3 as appropriate to the property&apos;s age and condition).
+          </li>
+          <li>
+            Instruct a <strong>solicitor or licensed conveyancer</strong> to
+            run searches, review the title and lease (if leasehold), and check
+            covenants, easements and restrictions.
+          </li>
+          <li>
+            Speak to a <strong>qualified, FCA-regulated mortgage broker</strong>
+            {" "}about lending, stress-tests, product fees and personal
+            affordability.
+          </li>
+          <li>
+            Verify rental demand and achievable rent independently (local
+            agents, comparable adverts, on-the-ground viewings).
+          </li>
+          <li>
+            Confirm <strong>licensing requirements</strong>, planning consents,
+            and any additional council schemes that apply to the postcode.
+          </li>
+          <li>
+            Take <strong>tax and accounting advice</strong> on your personal
+            position (Section 24, SDLT, capital gains, structure).
+          </li>
+        </ul>
+        <p>
+          You agree that any reliance you place on a Capora score or report
+          without completing this due diligence is at your sole risk, and that
+          Capora and Daramola Consulting are not responsible for any decision
+          you take, or any loss you suffer, on that basis.
+        </p>
+      </LegalSection>
+
+      <LegalSection id="accounts" title="3. Your account">
         <p>
           You must be 18 or over and able to enter into a binding contract to
           use the Service. You&apos;re responsible for keeping your login
@@ -41,7 +87,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="acceptable-use" title="3. Acceptable use">
+      <LegalSection id="acceptable-use" title="4. Acceptable use">
         <p>You agree not to:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li>
@@ -50,7 +96,7 @@ export default function TermsPage() {
           </li>
           <li>
             Scrape, crawl, reverse-engineer, or otherwise extract bulk data
-            from Surge outside of the documented features.
+            from Capora outside of the documented features.
           </li>
           <li>
             Resell or commercially redistribute reports, scores, or data
@@ -63,7 +109,7 @@ export default function TermsPage() {
         </ul>
       </LegalSection>
 
-      <LegalSection id="data-sources" title="4. Third-party data">
+      <LegalSection id="data-sources" title="5. Third-party data">
         <p>
           Scores and figures incorporate data from third-party sources
           (including the UK Land Registry, ONS, council licensing registers,
@@ -73,9 +119,9 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="ip" title="5. Intellectual property">
+      <LegalSection id="ip" title="6. Intellectual property">
         <p>
-          The Surge name, logo, design, and methodology are owned by
+          The Capora name, logo, design, and methodology are owned by
           Daramola Consulting Ltd. The scores and reports you generate are
           yours to use for your own research and decision-making, including
           sharing them with brokers, accountants, and partners. You must not
@@ -83,7 +129,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="ai" title="6. AI-generated content">
+      <LegalSection id="ai" title="7. AI-generated content">
         <p>
           Some output (deal reports, listing extractions) is generated by
           large language models. These outputs can contain errors. You should
@@ -92,16 +138,16 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="pricing" title="7. Pricing and payment">
+      <LegalSection id="pricing" title="8. Pricing and payment">
         <p>
-          During early access, Surge is free with a 5-report-per-month
+          During early access, Capora is free with a 5-report-per-month
           quota. Paid tiers will be introduced; you&apos;ll be notified before
           any subscription is activated on your account, and you won&apos;t be
           charged without explicit consent.
         </p>
       </LegalSection>
 
-      <LegalSection id="termination" title="8. Termination">
+      <LegalSection id="termination" title="9. Termination">
         <p>
           You can close your account at any time by contacting us. We can
           suspend or terminate your account if you breach these terms,
@@ -111,7 +157,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="liability" title="9. Liability">
+      <LegalSection id="liability" title="10. Liability">
         <p>
           Nothing in these terms limits our liability for fraud or for death
           or personal injury caused by our negligence, or any liability that
@@ -123,11 +169,11 @@ export default function TermsPage() {
           you paid us in the 12 months before the claim arose. We are not
           liable for investment losses, lost profits, lost deals, or
           consequential losses arising from your use of the Service. You use
-          Surge at your own risk.
+          Capora at your own risk.
         </p>
       </LegalSection>
 
-      <LegalSection id="changes" title="10. Changes to these terms">
+      <LegalSection id="changes" title="11. Changes to these terms">
         <p>
           We may update these terms from time to time. We&apos;ll show the
           updated date at the top, and for material changes we&apos;ll notify
@@ -135,7 +181,7 @@ export default function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection id="law" title="11. Governing law">
+      <LegalSection id="law" title="12. Governing law">
         <p>
           These terms are governed by the laws of England and Wales. Any
           disputes will be subject to the exclusive jurisdiction of the

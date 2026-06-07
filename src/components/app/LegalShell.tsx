@@ -50,10 +50,10 @@ export function LegalShell({ title, lastUpdated, children }: LegalShellProps) {
         <p className="text-xs text-faint mt-12">
           Questions? Email{" "}
           <a
-            href="mailto:hello@surge.app"
+            href="mailto:hello@capora.co.uk"
             className="text-[var(--color-primary)] hover:underline"
           >
-            hello@surge.app
+            hello@capora.co.uk
           </a>
           .
         </p>

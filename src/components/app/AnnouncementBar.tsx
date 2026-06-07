@@ -12,7 +12,7 @@ interface AnnouncementBarProps {
 }
 
 export function AnnouncementBar({
-  storageKey = "surge-announcement-v1",
+  storageKey = "capora-announcement-v1",
   message,
   href,
   ctaLabel = "Learn more",

@@ -40,7 +40,7 @@ export function ReferralBlock({
     if (typeof navigator !== "undefined" && "share" in navigator) {
       try {
         await navigator.share({
-          title: "Surge",
+          title: "Capora",
           text: "Score UK BTL deals in seconds. Free to try.",
           url: link,
         });

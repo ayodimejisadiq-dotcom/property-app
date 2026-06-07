@@ -12,7 +12,7 @@ async function resolveOrigin(): Promise<string> {
   const h = await headers();
   const host = h.get("host");
   const proto = h.get("x-forwarded-proto") ?? "https";
-  return host ? `${proto}://${host}` : "https://surge.app";
+  return host ? `${proto}://${host}` : "https://capora.co.uk";
 }
 
 export default async function ProfilePage() {

@@ -16,9 +16,9 @@ const POINTS = [
       "Scores and reports are for research only — not a recommendation to buy, sell or finance any property.",
   },
   {
-    title: "Always do your own due diligence",
+    title: "Always do your own due diligence (DYOD)",
     body:
-      "Commission a survey, valuation and legal review. Talk to a qualified mortgage broker before you commit.",
+      "Commission a RICS survey, instruct a solicitor, and speak to a qualified mortgage broker before you commit. Capora is a starting point, not a replacement.",
   },
   {
     title: "The data has limits",
@@ -28,7 +28,7 @@ const POINTS = [
   {
     title: "Your decisions are yours",
     body:
-      "Surge and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
+      "Capora and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
   },
 ];
 
@@ -88,7 +88,7 @@ export default function DisclaimerPage() {
             One thing before you start
           </h1>
           <p className="text-muted mt-2">
-            Surge is an analytical tool — not a financial adviser. Please
+            Capora is an analytical tool — not a financial adviser. Please
             read and acknowledge.
           </p>
         </div>
@@ -114,8 +114,10 @@ export default function DisclaimerPage() {
             className="mt-0.5"
           />
           <span className="text-sm text-ink">
-            I understand this is not financial advice and I will do my own due
-            diligence.
+            I understand this is not financial advice and I agree to{" "}
+            <strong>Do My Own Due Diligence (DYOD)</strong> on every property —
+            including a RICS survey, solicitor, and qualified mortgage broker —
+            before acting on any Capora output.
           </span>
         </label>
 

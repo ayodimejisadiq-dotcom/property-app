@@ -49,7 +49,7 @@ export function AuthSplit({ variant, children }: AuthSplitProps) {
               </svg>
             </span>
             <span className="font-semibold text-lg lowercase tracking-tight">
-              surge
+              capora
             </span>
           </div>
 

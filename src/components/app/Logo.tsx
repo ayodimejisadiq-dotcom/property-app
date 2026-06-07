@@ -49,7 +49,7 @@ export function Logo({
             s.text,
           )}
         >
-          surge
+          capora
         </span>
       )}
     </span>

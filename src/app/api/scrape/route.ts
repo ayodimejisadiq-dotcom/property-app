@@ -6,8 +6,13 @@ import {
   UnsupportedListingError,
   scrapeListing,
 } from "@/lib/scrapers";
+import { FREE_TIER_MONTHLY_DEALS } from "@/lib/constants";
 
 const Body = z.object({ url: z.string().url() });
+
+// Free-tier scrape cap. Set 4x the deal quota so users can preview a few
+// listings without burning their 5/month report quota.
+const FREE_TIER_MONTHLY_SCRAPES = FREE_TIER_MONTHLY_DEALS * 4;
 
 export async function POST(req: Request) {
   let raw: unknown;
@@ -30,8 +35,39 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
   }
 
+  // Per-tier monthly cap on scrapes — protects OpenAI spend from abuse.
+  // Reuses the same monthly reset window as the deal quota.
+  const { data: profile } = await supabase
+    .from("users")
+    .select("tier, scrapes_used_this_month, deals_quota_resets_at")
+    .eq("id", user.id)
+    .single();
+
+  let used = profile?.scrapes_used_this_month ?? 0;
+  const resetsAt = profile?.deals_quota_resets_at
+    ? new Date(profile.deals_quota_resets_at)
+    : null;
+  if (resetsAt && resetsAt <= new Date()) {
+    used = 0; // window expired; /api/analyse will roll the deal counter too.
+  }
+
+  if ((profile?.tier ?? "free") === "free" && used >= FREE_TIER_MONTHLY_SCRAPES) {
+    return NextResponse.json(
+      {
+        error: `You've used all ${FREE_TIER_MONTHLY_SCRAPES} URL fetches for this month. Paid tiers will lift this cap.`,
+        code: "QUOTA_EXCEEDED",
+      },
+      { status: 429 },
+    );
+  }
+
   try {
     const result = await scrapeListing(parsed.data.url);
+    // Increment only on success so failed/blocked fetches don't burn quota.
+    await supabase
+      .from("users")
+      .update({ scrapes_used_this_month: used + 1 })
+      .eq("id", user.id);
     return NextResponse.json({ data: result });
   } catch (err) {
     if (err instanceof UnsupportedListingError) {

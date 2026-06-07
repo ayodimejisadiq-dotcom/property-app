@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 const RAW_SITE_URL =
-  process.env.NEXT_PUBLIC_APP_URL ?? "https://surge.app";
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://capora.co.uk";
 const SITE_URL = /^https?:\/\//i.test(RAW_SITE_URL)
   ? RAW_SITE_URL
   : `https://${RAW_SITE_URL}`;
@@ -18,12 +18,12 @@ const SITE_URL = /^https?:\/\//i.test(RAW_SITE_URL)
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Surge — Score property deals in seconds",
-    template: "%s · Surge",
+    default: "Capora — Score property deals in seconds",
+    template: "%s · Capora",
   },
   description:
     "A 0–100 score and plain-English report on every UK BTL deal. Built for landlords, not algorithms. Not financial advice.",
-  applicationName: "Surge",
+  applicationName: "Capora",
   keywords: [
     "UK property",
     "BTL",
@@ -36,16 +36,16 @@ export const metadata: Metadata = {
   authors: [{ name: "Daramola Consulting" }],
   openGraph: {
     type: "website",
-    title: "Surge — Score property deals in seconds",
+    title: "Capora — Score property deals in seconds",
     description:
       "A 0–100 score and plain-English report on every UK BTL deal. Five reports a month, free.",
-    siteName: "Surge",
+    siteName: "Capora",
     locale: "en_GB",
     url: SITE_URL,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Surge — Score property deals in seconds",
+    title: "Capora — Score property deals in seconds",
     description:
       "A 0–100 score on every UK BTL deal. Built for landlords, not algorithms.",
   },
