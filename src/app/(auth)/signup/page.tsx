@@ -106,8 +106,8 @@ function SignupForm() {
 
   return (
     <AuthSplit variant="signup">
-      <div className="rounded-2xl bg-white border border-line shadow-sm p-7 md:p-8">
-        <h1 className="text-2xl font-bold text-ink">Get started</h1>
+      <div className="bg-[var(--color-card)] border border-[var(--color-line)] p-7 md:p-8">
+        <h1 className="text-2xl display text-[var(--color-ink-deep)]">Get started</h1>
         <p className="text-sm text-muted mt-1">
           5 deal reports a month, free. No card required.
         </p>

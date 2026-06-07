@@ -53,8 +53,8 @@ export default function LoginPage() {
 
   return (
     <AuthSplit variant="login">
-      <div className="rounded-2xl bg-white border border-line shadow-sm p-7 md:p-8">
-        <h1 className="text-2xl font-bold text-ink">Welcome back</h1>
+      <div className="bg-[var(--color-card)] border border-[var(--color-line)] p-7 md:p-8">
+        <h1 className="text-2xl display text-[var(--color-ink-deep)]">Welcome back</h1>
         <p className="text-sm text-muted mt-1">
           Sign in to your Capora account.
         </p>
