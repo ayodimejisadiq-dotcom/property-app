@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { AnnouncementBar } from "@/components/app/AnnouncementBar";
@@ -8,6 +8,12 @@ import { CookieBanner } from "@/components/app/CookieBanner";
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
+});
+
+const serif = Source_Serif_4({
+  variable: "--font-serif",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 const RAW_SITE_URL =
@@ -68,7 +74,10 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="en"
+      className={`${inter.variable} ${serif.variable} h-full antialiased`}
+    >
       <body className="min-h-full flex flex-col bg-white text-body">
         <ToastProvider>
           <AnnouncementBar

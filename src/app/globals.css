@@ -2,6 +2,15 @@
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: var(--font-serif), "Source Serif 4", Georgia, serif;
+
+  /* Editorial palette — used by /deals/[id] proof-of-concept */
+  --color-paper: #F7F4ED;          /* warm off-white canvas */
+  --color-ink-deep: #0F1419;       /* near-black headline */
+  --color-rule: #1F2937;           /* hairline rule */
+  --color-rule-faint: #E2DBCC;     /* paper-coloured hairline */
+  --color-accent-signal: #C25028;  /* terracotta — single accent */
+  --color-muted-warm: #6B6256;     /* paper-coloured muted */
 
   --color-primary: #4F46E5;
   --color-primary-dark: #3730A3;
@@ -73,4 +82,41 @@ body {
 /* Tap targets */
 button, a, [role="button"] {
   -webkit-tap-highlight-color: transparent;
+}
+
+/* Editorial / financial-press layer (scoped via .editorial wrapper) */
+.editorial {
+  background: var(--color-paper);
+  color: var(--color-ink-deep);
+  font-feature-settings: "ss01", "cv11";
+}
+.editorial .tnum {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.editorial .display {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+.editorial .rule {
+  border-top: 1px solid var(--color-ink-deep);
+}
+.editorial .rule-faint {
+  border-top: 1px solid var(--color-rule-faint);
+}
+.editorial .eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-deep);
+  font-weight: 600;
+}
+.editorial .pill {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 600;
+  border: 1px solid var(--color-ink-deep);
 }
