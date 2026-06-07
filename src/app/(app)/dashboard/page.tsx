@@ -1,20 +1,11 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  ArrowUpRight,
-  Eye,
-  FileText,
-  Gauge,
-  Plus,
-  Sparkles,
-  Trophy,
-} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { PromoCard } from "@/components/app/PromoCard";
-import { cn, scoreBand, bandColor } from "@/lib/utils";
+import { cn, scoreBand } from "@/lib/utils";
 import { FREE_TIER_MONTHLY_DEALS } from "@/lib/constants";
+
+const INK = "var(--color-ink-deep)";
+const ACCENT = "var(--color-accent)";
 
 interface Deal {
   id: string;
@@ -40,29 +31,21 @@ function relativeTime(iso: string) {
   });
 }
 
-function bandPillClass(band: ReturnType<typeof scoreBand>) {
-  switch (band) {
-    case "STRONG":
-      return "bg-[var(--color-success)]/10 text-[var(--color-success)]";
-    case "MODERATE":
-      return "bg-[var(--color-warning)]/10 text-[var(--color-warning)]";
-    case "WEAK":
-      return "bg-[var(--color-danger)]/10 text-[var(--color-danger)]";
-    default:
-      return "bg-fill text-muted";
+function bandFg(b: ReturnType<typeof scoreBand>) {
+  switch (b) {
+    case "STRONG": return "#2D6A3E";
+    case "MODERATE": return "#9C6B1D";
+    case "WEAK": return "#9C2A1D";
+    default: return "#6B6256";
   }
 }
 
-function bandLabel(band: ReturnType<typeof scoreBand>) {
-  switch (band) {
-    case "STRONG":
-      return "Strong";
-    case "MODERATE":
-      return "Moderate";
-    case "WEAK":
-      return "Weak";
-    default:
-      return "—";
+function bandWord(b: ReturnType<typeof scoreBand>) {
+  switch (b) {
+    case "STRONG": return "Strong";
+    case "MODERATE": return "Moderate";
+    case "WEAK": return "Weak";
+    default: return "—";
   }
 }
 
@@ -99,276 +82,204 @@ export default async function DashboardPage() {
       )
     : null;
 
-  const strongest =
-    scoredDeals.length > 0
-      ? scoredDeals.reduce((best, d) =>
-          (d.composite_score ?? 0) > (best.composite_score ?? 0) ? d : best,
-        )
-      : null;
+  const strongest = scoredDeals.length > 0
+    ? scoredDeals.reduce((best, d) =>
+        (d.composite_score ?? 0) > (best.composite_score ?? 0) ? d : best,
+      )
+    : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
-        <div>
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-bold text-ink">
-              Welcome back, {firstName}
-            </h1>
-            <UsageChip used={used} quota={quota} />
-          </div>
-          <p className="text-muted mt-1">
-            {totalDeals === 0
-              ? "Run your first analysis to see your activity here."
-              : "Here's your deal analysis activity."}
-          </p>
-        </div>
-        <Link href="/analyse">
-          <Button size="lg">
-            <Plus className="h-4 w-4" />
-            Analyse new deal
-          </Button>
+    <div className="max-w-6xl mx-auto px-5 sm:px-8 py-12">
+      {/* Masthead */}
+      <div className="flex items-center justify-between text-[10px] tracking-[0.18em] uppercase" style={{ color: INK }}>
+        <span>Capora · Dashboard</span>
+        <Link href="/billing" className="hover:underline underline-offset-4">
+          {used >= quota ? "Quota reached · Upgrade" : `${used}/${quota} reports used`}
         </Link>
       </div>
+      <div className="mt-3 rule" />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-        <StatCard
-          icon={FileText}
-          label="Total deals"
-          value={totalDeals.toString()}
-        />
-        <StatCard
-          icon={Gauge}
+      {/* Hero */}
+      <header className="pt-10 pb-12 grid grid-cols-12 gap-6 items-end">
+        <div className="col-span-12 md:col-span-8">
+          <p className="eyebrow">Welcome back</p>
+          <h1
+            className="display mt-4 leading-[1.05] capitalize"
+            style={{ fontSize: "clamp(2.5rem, 5.5vw, 4rem)", color: INK }}
+          >
+            {firstName}.
+          </h1>
+          <p className="mt-5 text-sm text-[var(--color-body)] max-w-md">
+            {totalDeals === 0
+              ? "Run your first analysis to see your activity here."
+              : "Your deal analysis activity."}
+          </p>
+        </div>
+        <div className="col-span-12 md:col-span-4 md:text-right">
+          <Link href="/analyse">
+            <Button variant="primary" size="lg">
+              + Analyse new deal
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      {/* Stats */}
+      <section className="border-t border-[var(--color-ink-deep)] pt-8 grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-8">
+        <Stat label="Total deals" value={totalDeals.toString()} />
+        <Stat
           label="Average score"
           value={avgScore != null ? avgScore.toString() : "—"}
-          valueClassName={
-            avgScore != null
-              ? bandColor(scoreBand(avgScore))
-              : "text-muted"
-          }
+          colour={avgScore != null ? bandFg(scoreBand(avgScore)) : undefined}
         />
-        <StatCard
-          icon={Trophy}
-          label="Strongest deal"
+        <Stat
+          label="Strongest"
           value={
             strongest && strongest.composite_score != null
               ? strongest.composite_score.toString()
               : "—"
           }
-          sub={
-            strongest
-              ? `${strongest.postcode} · ${relativeTime(strongest.created_at)}`
-              : "No deals yet"
-          }
+          sub={strongest ? `${strongest.postcode} · ${relativeTime(strongest.created_at)}` : "No deals yet"}
           href={strongest ? `/deals/${strongest.id}` : undefined}
         />
-        <StatCard
-          icon={Sparkles}
+        <Stat
           label="This month"
-          value={`${used} / ${quota}`}
+          value={`${used}/${quota}`}
           sub="reports used"
         />
-      </div>
+      </section>
 
+      {/* Recent */}
       {totalDeals === 0 ? (
         <EmptyState />
       ) : (
-        <div className="space-y-6">
-          <RecentDeals deals={recent} />
-          {totalDeals > 0 && totalDeals < 3 && (
-            <PromoCard
-              eyebrow="Spread the word"
-              title="Refer a fellow landlord, both win."
-              body="Share your code from your profile. When paid plans launch, every referral earns you a credit on top of your tier."
-              ctaLabel="Get your link"
-              ctaHref="/profile"
-              tone="accent"
-            />
-          )}
-        </div>
+        <section className="mt-16">
+          <div className="flex items-baseline justify-between">
+            <p className="eyebrow">Recent deals</p>
+            <Link
+              href="/deals"
+              className="text-[11px] tracking-[0.14em] uppercase font-semibold hover:underline underline-offset-4"
+              style={{ color: INK }}
+            >
+              View all →
+            </Link>
+          </div>
+          <div className="mt-3 rule" />
+          <ul className="mt-2 divide-y divide-[var(--color-line)]">
+            {recent.map((d) => {
+              const band = scoreBand(d.composite_score);
+              return (
+                <li key={d.id}>
+                  <Link
+                    href={`/deals/${d.id}`}
+                    className="grid grid-cols-[1fr_auto_auto] items-center gap-6 py-5 group"
+                  >
+                    <div className="min-w-0">
+                      <p className="truncate text-sm" style={{ color: INK }}>
+                        {d.address}
+                      </p>
+                      <p className="text-[11px] tracking-[0.12em] uppercase mt-1 text-[var(--color-muted)]">
+                        {d.postcode} · {relativeTime(d.created_at)}
+                      </p>
+                    </div>
+                    <span
+                      className="text-[10px] tracking-[0.14em] uppercase font-semibold"
+                      style={{ color: bandFg(band) }}
+                    >
+                      {bandWord(band)}
+                    </span>
+                    <span
+                      className="display tnum text-3xl w-14 text-right group-hover:underline underline-offset-4"
+                      style={{ color: bandFg(band) }}
+                    >
+                      {d.composite_score ?? "—"}
+                    </span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
       )}
     </div>
   );
 }
 
-function UsageChip({ used, quota }: { used: number; quota: number }) {
-  const ratio = used / quota;
-  const tone =
-    ratio >= 1
-      ? "bg-[var(--color-danger)]/10 text-[var(--color-danger)] hover:bg-[var(--color-danger)]/15"
-      : ratio >= 0.8
-        ? "bg-[var(--color-warning)]/10 text-[var(--color-warning)] hover:bg-[var(--color-warning)]/15"
-        : "bg-fill text-muted hover:bg-line";
-  const label =
-    ratio >= 1
-      ? `Quota reached — upgrade for more`
-      : `${used} of ${quota} free reports used this month`;
-  return (
-    <Link
-      href="/billing"
-      className={cn(
-        "text-xs font-medium px-2.5 py-1 rounded-full whitespace-nowrap transition-colors",
-        tone,
-      )}
-    >
-      {label}
-    </Link>
-  );
-}
-
-function StatCard({
-  icon: Icon,
+function Stat({
   label,
   value,
   sub,
-  valueClassName,
+  colour,
   href,
 }: {
-  icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   sub?: string;
-  valueClassName?: string;
+  colour?: string;
   href?: string;
 }) {
   const inner = (
-    <Card
-      className={cn(
-        "h-full",
-        href && "hover:border-[var(--color-primary)]/40 transition-colors",
-      )}
-    >
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted">{label}</p>
-          <Icon className="h-4 w-4 text-faint" />
-        </div>
-        <p
-          className={cn(
-            "text-3xl font-bold mt-1",
-            valueClassName ?? "text-ink",
-          )}
-        >
-          {value}
+    <div>
+      <p className="eyebrow">{label}</p>
+      <p
+        className="display tnum mt-2"
+        style={{ fontSize: "clamp(2rem, 4vw, 2.75rem)", color: colour ?? INK, lineHeight: 1 }}
+      >
+        {value}
+      </p>
+      {sub && (
+        <p className="mt-2 text-[11px] tracking-[0.12em] uppercase text-[var(--color-muted)]">
+          {sub}
         </p>
-        {sub && <p className="text-xs text-muted mt-1">{sub}</p>}
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
-  return href ? <Link href={href}>{inner}</Link> : inner;
+  return href ? <Link href={href} className="block group">{inner}</Link> : inner;
 }
 
 function EmptyState() {
   return (
-    <div className="grid gap-4 lg:grid-cols-3">
-      <Card className="lg:col-span-2 bg-gradient-to-br from-[var(--color-primary-light)]/40 to-white">
-        <CardContent className="pt-8 pb-8">
-          <div className="h-12 w-12 rounded-xl bg-[var(--color-primary)] text-white flex items-center justify-center mb-5">
-            <Plus className="h-6 w-6" />
-          </div>
-          <h2 className="text-xl font-bold text-ink">
-            Score your first deal
-          </h2>
-          <p className="text-body mt-2 max-w-md">
-            Paste a Rightmove or Zoopla URL — or type the property details — and
-            you&apos;ll have a 0–100 score in under a minute.
-          </p>
-          <ol className="mt-5 space-y-2 text-sm text-body">
-            {[
-              "Paste a property URL or fill the form",
-              "We score the seven factors using real UK data",
-              "Read your report, save it, or export a PDF",
-            ].map((step, i) => (
-              <li key={i} className="flex gap-2.5 items-start">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white border border-line text-muted text-xs font-semibold shrink-0">
-                  {i + 1}
-                </span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-          <Link href="/analyse" className="inline-block mt-6">
-            <Button size="lg">
-              Analyse new deal
-              <ArrowRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="pt-8 pb-8">
-          <div className="h-12 w-12 rounded-xl bg-fill text-[var(--color-primary)] flex items-center justify-center mb-5">
-            <Eye className="h-6 w-6" />
-          </div>
-          <h3 className="font-semibold text-ink">See what you&apos;ll get</h3>
-          <p className="text-sm text-body mt-2">
-            Browse a sample report on a fictional Manchester deal. No signup
-            data spent.
-          </p>
-          <Link href="/sample" className="inline-block mt-5">
-            <Button variant="outline">
-              View sample deal
-              <ArrowUpRight className="h-4 w-4" />
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-function RecentDeals({ deals }: { deals: Deal[] }) {
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-ink">Recent deals</h2>
-          <Link
-            href="/deals"
-            className="text-sm text-[var(--color-primary)] font-medium hover:underline flex items-center gap-1"
-          >
-            View all
-            <ArrowRight className="h-3.5 w-3.5" />
-          </Link>
-        </div>
-        <div className="divide-y divide-line">
-          {deals.map((d) => {
-            const band = scoreBand(d.composite_score);
-            return (
-              <Link
-                key={d.id}
-                href={`/deals/${d.id}`}
-                className="flex items-center justify-between py-3 hover:bg-fill -mx-2 px-2 rounded-md"
-              >
-                <div className="min-w-0 flex-1">
-                  <p className="font-medium text-ink truncate">{d.address}</p>
-                  <p className="text-xs text-muted">
-                    {d.postcode} · {relativeTime(d.created_at)}
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0 ml-4">
-                  <span
-                    className={cn(
-                      "text-xs font-medium px-2 py-0.5 rounded-full",
-                      bandPillClass(band),
-                    )}
-                  >
-                    {bandLabel(band)}
-                  </span>
-                  <span
-                    className={cn(
-                      "text-lg font-bold w-10 text-right",
-                      bandColor(band),
-                    )}
-                  >
-                    {d.composite_score ?? "—"}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
-      </CardContent>
-    </Card>
+    <section className="mt-16 border-t border-[var(--color-ink-deep)] pt-10 grid md:grid-cols-3 gap-x-10 gap-y-8">
+      <div className="md:col-span-2">
+        <p className="eyebrow">Get started</p>
+        <h2
+          className="display mt-4 leading-[1.05]"
+          style={{ fontSize: "clamp(1.75rem, 3.5vw, 2.5rem)", color: INK }}
+        >
+          Score your first deal.
+        </h2>
+        <p className="mt-4 text-sm text-[var(--color-body)] max-w-lg">
+          Paste a Rightmove or Zoopla URL — or type the property details — and
+          you&apos;ll have a 0–100 score in under a minute.
+        </p>
+        <ol className="mt-7 space-y-3 text-sm text-[var(--color-body)]">
+          {[
+            "Paste a property URL or fill the form.",
+            "We score the seven factors using real UK data.",
+            "Read the analyst's note, save it, or export a PDF.",
+          ].map((step, i) => (
+            <li key={i} className="grid grid-cols-[auto_1fr] gap-x-4">
+              <span className="tnum text-xs tracking-[0.14em]" style={{ color: ACCENT }}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
+        <Link href="/analyse" className="inline-block mt-8">
+          <Button variant="primary" size="lg">Analyse new deal →</Button>
+        </Link>
+      </div>
+      <div className="md:border-l md:border-[var(--color-line)] md:pl-10">
+        <p className="eyebrow">Sample</p>
+        <p className="mt-4 text-sm text-[var(--color-body)]">
+          Browse a sample report on a fictional Manchester deal. No quota
+          spent.
+        </p>
+        <Link href="/sample" className="inline-block mt-6">
+          <Button variant="outline">View sample →</Button>
+        </Link>
+      </div>
+    </section>
   );
 }
