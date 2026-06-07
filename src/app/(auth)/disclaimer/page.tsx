@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertTriangle } from "lucide-react";
 import { Logo } from "@/components/app/Logo";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -11,24 +10,24 @@ import { CURRENT_DISCLAIMER_VERSION } from "@/lib/constants";
 
 const POINTS = [
   {
-    title: "It's not financial advice",
-    body:
-      "Scores and reports are for research only — not a recommendation to buy, sell or finance any property.",
+    n: "I",
+    title: "It is not financial advice.",
+    body: "Scores and reports are for research only — not a recommendation to buy, sell or finance any property.",
   },
   {
-    title: "Always do your own due diligence (DYOD)",
-    body:
-      "Commission a RICS survey, instruct a solicitor, and speak to a qualified mortgage broker before you commit. Capora is a starting point, not a replacement.",
+    n: "II",
+    title: "Always do your own due diligence (DYOD).",
+    body: "Commission a RICS survey, instruct a solicitor, and speak to a qualified mortgage broker before you commit. Capora is a starting point, not a replacement.",
   },
   {
-    title: "The data has limits",
-    body:
-      "Estimates use Land Registry, ONS and council sources that can be incomplete or delayed. We cite them so you can verify.",
+    n: "III",
+    title: "The data has limits.",
+    body: "Estimates use Land Registry, ONS and council sources that can be incomplete or delayed. We cite them so you can verify.",
   },
   {
-    title: "Your decisions are yours",
-    body:
-      "Capora and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
+    n: "IV",
+    title: "Your decisions are yours.",
+    body: "Capora and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
   },
 ];
 
@@ -75,62 +74,81 @@ export default function DisclaimerPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-fill px-4 py-10">
-      <div className="w-full max-w-2xl bg-white rounded-xl border border-line shadow-sm p-6 md:p-10">
-        <div className="flex justify-center mb-6">
+    <div className="min-h-screen bg-[var(--color-paper)] flex items-center justify-center px-5 py-10">
+      <div className="w-full max-w-2xl">
+        <div className="flex justify-center mb-12">
           <Logo size="md" />
         </div>
-        <div className="flex flex-col items-center text-center mb-6">
-          <div className="h-12 w-12 rounded-full bg-[var(--color-warning)]/15 text-[var(--color-warning)] flex items-center justify-center mb-3">
-            <AlertTriangle className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold text-ink">
-            One thing before you start
-          </h1>
-          <p className="text-muted mt-2">
-            Capora is an analytical tool — not a financial adviser. Please
-            read and acknowledge.
-          </p>
-        </div>
+        <p className="eyebrow text-center">Before you start</p>
+        <h1
+          className="display mt-5 leading-[1.05] text-center"
+          style={{
+            fontSize: "clamp(2rem, 4vw, 3rem)",
+            color: "var(--color-ink-deep)",
+          }}
+        >
+          One thing first.
+        </h1>
+        <p className="mt-6 text-center text-sm text-[var(--color-body)] max-w-xl mx-auto">
+          Capora is an analytical tool — not a financial adviser. Please read
+          and acknowledge.
+        </p>
 
-        <ol className="space-y-4 mb-8">
-          {POINTS.map((p, i) => (
-            <li key={i} className="flex gap-3">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)] text-sm font-semibold">
-                {i + 1}
-              </span>
+        <ol className="mt-14 space-y-8">
+          {POINTS.map((p) => (
+            <li key={p.n} className="border-t border-[var(--color-ink-deep)] pt-5 grid grid-cols-[auto_1fr] gap-x-5">
+              <p
+                className="display text-2xl"
+                style={{ color: "var(--color-accent)" }}
+              >
+                {p.n}
+              </p>
               <div>
-                <p className="font-semibold text-ink">{p.title}</p>
-                <p className="text-sm text-muted">{p.body}</p>
+                <p
+                  className="display text-xl"
+                  style={{ color: "var(--color-ink-deep)" }}
+                >
+                  {p.title}
+                </p>
+                <p className="mt-2 text-sm text-[var(--color-body)] leading-relaxed">
+                  {p.body}
+                </p>
               </div>
             </li>
           ))}
         </ol>
 
-        <label className="flex items-start gap-3 mb-6 cursor-pointer">
-          <Checkbox
-            checked={checked}
-            onChange={(e) => setChecked(e.target.checked)}
-            className="mt-0.5"
-          />
-          <span className="text-sm text-ink">
-            I understand this is not financial advice and I agree to{" "}
-            <strong>Do My Own Due Diligence (DYOD)</strong> on every property —
-            including a RICS survey, solicitor, and qualified mortgage broker —
-            before acting on any Capora output.
-          </span>
-        </label>
+        <div className="mt-14 border-t border-[var(--color-line)] pt-8">
+          <label className="flex items-start gap-3 mb-6 cursor-pointer">
+            <Checkbox
+              checked={checked}
+              onChange={(e) => setChecked(e.target.checked)}
+              className="mt-1"
+            />
+            <span className="text-sm text-[var(--color-ink-deep)] leading-relaxed">
+              I understand this is not financial advice and I agree to{" "}
+              <strong>Do My Own Due Diligence (DYOD)</strong> on every
+              property — including a RICS survey, solicitor, and qualified
+              mortgage broker — before acting on any Capora output.
+            </span>
+          </label>
 
-        {error && <p className="text-sm text-danger mb-3">{error}</p>}
+          {error && (
+            <p className="text-sm mb-4" style={{ color: "var(--color-danger)" }}>
+              {error}
+            </p>
+          )}
 
-        <Button
-          onClick={accept}
-          disabled={!checked || loading}
-          size="lg"
-          className="w-full"
-        >
-          {loading ? "Saving…" : "I understand — take me in"}
-        </Button>
+          <Button
+            onClick={accept}
+            disabled={!checked || loading}
+            size="lg"
+            variant="primary"
+            className="w-full"
+          >
+            {loading ? "Saving…" : "I understand — take me in →"}
+          </Button>
+        </div>
       </div>
     </div>
   );

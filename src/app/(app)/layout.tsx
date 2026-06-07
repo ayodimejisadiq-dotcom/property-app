@@ -43,9 +43,9 @@ export default async function AppLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="border-b border-line bg-white sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+    <div className="min-h-screen flex flex-col bg-[var(--color-paper)] text-[var(--color-ink-deep)]">
+      <header className="border-b border-[var(--color-line-strong)] bg-[var(--color-paper)] sticky top-0 z-30">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8 h-14 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center">
             <Logo size="sm" />
           </Link>
@@ -59,7 +59,7 @@ export default async function AppLayout({
       <PendingReferralApplier
         alreadyReferred={!!profile?.referred_by_user_id}
       />
-      <main className="flex-1 bg-fill safe-bottom">{children}</main>
+      <main className="flex-1 bg-[var(--color-paper)] safe-bottom">{children}</main>
     </div>
   );
 }
