@@ -111,6 +111,11 @@ function SignupForm() {
         <p className="text-sm text-muted mt-1">
           5 deal reports a month, free. No card required.
         </p>
+        <div className="mt-3 rounded-md bg-[var(--color-primary-light)] border border-[var(--color-primary)]/20 px-3 py-2 text-xs text-ink">
+          <span className="font-semibold">Free tier only during early access.</span>{" "}
+          Paid plans (Investor, Pro, Portfolio) are coming soon — you&apos;ll see
+          them on the Billing page.
+        </div>
 
         {sentTo ? (
           <div className="text-center py-4 mt-4">

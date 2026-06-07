@@ -111,8 +111,10 @@ export default async function BillingPage({
           <span className="text-ink font-medium capitalize">
             {currentTier}
           </span>{" "}
-          plan. Paid tiers are launching soon — join the waitlist and we&apos;ll
-          email you the moment they&apos;re live.
+          plan. The Free tier is fully active during early access. Paid tiers
+          (Investor, Pro, Portfolio) are <strong>coming soon</strong> —
+          you can register interest below and we&apos;ll email you the moment
+          they go live.
         </p>
       </div>
 
@@ -133,7 +135,7 @@ export default async function BillingPage({
                     year: "numeric",
                   })
                 : "the 1st of next month"}
-              {`. Need more before then? Join a paid waitlist below and we'll be in touch.`}
+              {`. Paid tiers with bigger quotas are launching soon — register interest below.`}
             </p>
           </div>
         </div>
@@ -142,38 +144,53 @@ export default async function BillingPage({
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {TIERS.map((t) => {
           const isCurrent = t.key === currentTier;
+          const isFree = t.key === "free";
           return (
             <div
               key={t.key}
               className={cn(
                 "relative rounded-2xl bg-white p-6 flex flex-col transition",
-                t.highlight
-                  ? "border-2 border-[var(--color-primary)] shadow-lg xl:scale-[1.02]"
-                  : "border border-line hover:border-[var(--color-primary)]/30",
+                isFree
+                  ? "border-2 border-[var(--color-primary)] shadow-lg"
+                  : "border border-line opacity-90 hover:opacity-100",
               )}
             >
-              {t.highlight && (
+              {isFree && (
                 <div
                   className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full text-white shadow-md"
                   style={{ background: "var(--gradient-primary)" }}
                 >
-                  Most popular
+                  Available now
                 </div>
               )}
+              {!isFree && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 text-[10px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full bg-[var(--color-warning)] text-white shadow-md">
+                  Coming soon
+                </span>
+              )}
               {isCurrent && (
-                <span className="self-start text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-success)]/10 text-[var(--color-success)] mb-3">
+                <span className="self-start text-[10px] font-medium uppercase tracking-wider px-2 py-0.5 rounded-full bg-[var(--color-success)]/10 text-[var(--color-success)] mb-3 mt-2">
                   Current plan
                 </span>
               )}
-              <h2 className="text-lg font-bold text-ink">{t.name}</h2>
+              <h2
+                className={cn(
+                  "text-lg font-bold mt-2",
+                  isFree ? "text-ink" : "text-muted",
+                )}
+              >
+                {t.name}
+              </h2>
               <div className="mt-2">
                 <span
                   className={cn(
                     "text-4xl font-bold",
-                    t.highlight ? "bg-clip-text text-transparent" : "text-ink",
+                    isFree
+                      ? "bg-clip-text text-transparent"
+                      : "text-muted",
                   )}
                   style={
-                    t.highlight
+                    isFree
                       ? { backgroundImage: "var(--gradient-primary)" }
                       : undefined
                   }
@@ -182,41 +199,51 @@ export default async function BillingPage({
                 </span>
                 <span className="text-sm text-muted ml-1">{t.cadence}</span>
               </div>
-              <p className="text-sm text-body mt-3 leading-relaxed">
+              <p
+                className={cn(
+                  "text-sm mt-3 leading-relaxed",
+                  isFree ? "text-body" : "text-muted",
+                )}
+              >
                 {t.blurb}
               </p>
 
               <ul className="mt-5 space-y-2 text-sm flex-1">
                 {t.features.map((f) => (
-                  <li key={f} className="flex gap-2 text-body">
-                    <Check className="h-4 w-4 text-[var(--color-success)] mt-0.5 shrink-0" />
+                  <li
+                    key={f}
+                    className={cn(
+                      "flex gap-2",
+                      isFree ? "text-body" : "text-muted",
+                    )}
+                  >
+                    <Check
+                      className={cn(
+                        "h-4 w-4 mt-0.5 shrink-0",
+                        isFree ? "text-[var(--color-success)]" : "text-faint",
+                      )}
+                    />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
 
               <div className="mt-6">
-                {t.key === "free" ? (
+                {isFree ? (
                   <Button
                     variant="outline"
                     disabled={isCurrent}
                     className="w-full"
                   >
-                    {isCurrent ? "Current plan" : "Downgrade"}
+                    {isCurrent ? "You're on this plan" : "Downgrade"}
                   </Button>
                 ) : (
                   <Link
                     href={`/billing/waitlist?tier=${t.key}`}
                     className="block"
                   >
-                    <Button
-                      variant={t.highlight ? "primary" : "outline"}
-                      className={cn(
-                        "w-full",
-                        t.highlight && "shadow-md",
-                      )}
-                    >
-                      {t.cta}
+                    <Button variant="outline" className="w-full">
+                      Notify me when it launches
                     </Button>
                   </Link>
                 )}
@@ -243,8 +270,8 @@ export default async function BillingPage({
           .
         </p>
         <p className="text-xs text-muted mt-2">
-          Already on a paid waitlist? We&apos;ll email you with onboarding
-          instructions when paid plans go live.
+          Registered for a paid plan? We&apos;ll email you onboarding details as
+          soon as it launches. There&apos;s nothing to pay yet.
         </p>
       </div>
     </div>

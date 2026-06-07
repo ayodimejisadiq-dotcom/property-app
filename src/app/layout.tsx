@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { AnnouncementBar } from "@/components/app/AnnouncementBar";
+import { CookieBanner } from "@/components/app/CookieBanner";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -81,6 +82,7 @@ export default function RootLayout({
             ctaLabel="See plans"
           />
           {children}
+          <CookieBanner />
         </ToastProvider>
       </body>
     </html>
