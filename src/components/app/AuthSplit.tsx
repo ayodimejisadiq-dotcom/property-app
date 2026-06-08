@@ -33,21 +33,16 @@ export function AuthSplit({ variant, children }: AuthSplitProps) {
         <GridPattern className="text-white/10" opacity={1} density={28} />
 
         <div className="relative z-10 flex flex-col h-full">
-          <div className="flex items-center gap-2">
-            <span className="h-9 w-9 rounded-lg bg-white text-[var(--color-primary)] flex items-center justify-center">
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-[60%] w-[60%]"
-              >
-                <path d="M4 14 L12 5 L20 14" />
-                <path d="M6 18 L18 18" />
-              </svg>
-            </span>
+          <div className="flex items-center gap-2.5">
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeLinecap="round"
+              className="h-9 w-9 text-white"
+            >
+              <path d="M 19 7.5 A 9 9 0 1 0 19 16.5" strokeWidth="3.4" />
+            </svg>
             <span className="font-semibold text-lg lowercase tracking-tight">
               capora
             </span>

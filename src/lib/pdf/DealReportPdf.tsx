@@ -315,19 +315,11 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
         <View style={styles.header}>
           <View style={styles.brand}>
             <View style={styles.brandMark}>
-              <Svg viewBox="0 0 24 24" width="11" height="11">
+              <Svg viewBox="0 0 24 24" width="12" height="12">
                 <Path
-                  d="M4 14 L12 5 L20 14"
+                  d="M 19 7.5 A 9 9 0 1 0 19 16.5"
                   stroke="white"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  fill="none"
-                />
-                <Path
-                  d="M6 18 L18 18"
-                  stroke="white"
-                  strokeWidth="2.4"
+                  strokeWidth="3.4"
                   strokeLinecap="round"
                   fill="none"
                 />
