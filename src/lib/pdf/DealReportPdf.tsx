@@ -463,7 +463,7 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
             property transaction. Consult a qualified mortgage broker.
           </Text>
           <Text style={{ marginTop: 4 }}>
-            © {new Date().getFullYear()} Daramola Consulting
+            © {new Date().getFullYear()} Capora
           </Text>
         </View>
       </Page>

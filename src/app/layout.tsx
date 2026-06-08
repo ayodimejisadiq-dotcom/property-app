@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     "Rightmove",
     "Zoopla",
   ],
-  authors: [{ name: "Daramola Consulting" }],
+  authors: [{ name: "Capora" }],
   openGraph: {
     type: "website",
     title: "Capora — Score property deals in seconds",

@@ -154,11 +154,14 @@ function Hero() {
 
 function Strapline() {
   return (
-    <section className="border-b border-[var(--color-line)] bg-[var(--color-paper-deep)]">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-14 text-center">
+    <section
+      className="border-b border-[var(--color-line-strong)]"
+      style={{ background: "var(--color-paper-deep)" }}
+    >
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-16 md:py-20 text-center">
         <p
           className="display leading-snug"
-          style={{ fontSize: "clamp(1.25rem, 2.5vw, 1.875rem)", color: INK }}
+          style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", color: INK }}
         >
           Most BTL investors decide on gut feel, an asking price and a
           calculator from 2014.{" "}
@@ -238,34 +241,51 @@ function SevenFactors() {
     { name: "Licensing risk", blurb: "Selective, additional or HMO schemes for this postcode." },
   ];
   return (
-    <section className="border-b border-[var(--color-line)] bg-[var(--color-paper-deep)]">
-      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20">
+    <section
+      className="border-b border-[var(--color-ink-deep)]"
+      style={{ background: "var(--color-ink-deep)", color: "var(--color-paper)" }}
+    >
+      <div className="max-w-6xl mx-auto px-5 sm:px-8 py-20 md:py-24">
         <div className="flex items-baseline justify-between flex-wrap gap-4">
           <div>
-            <p className="eyebrow">The seven factors</p>
+            <p className="eyebrow" style={{ color: "var(--color-accent)" }}>
+              The seven factors
+            </p>
             <h2
               className="display mt-4 leading-[1.05] max-w-3xl"
-              style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: INK }}
+              style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: "var(--color-paper)" }}
             >
               Score band:{" "}
-              <span style={{ color: "#2D6A3E" }}>Strong</span> ·{" "}
-              <span style={{ color: "#9C6B1D" }}>Moderate</span> ·{" "}
-              <span style={{ color: "#9C2A1D" }}>Weak</span>.
+              <span style={{ color: "#7BC58B" }}>Strong</span> ·{" "}
+              <span style={{ color: "#E9B967" }}>Moderate</span> ·{" "}
+              <span style={{ color: "#E89687" }}>Weak</span>.
             </h2>
           </div>
         </div>
 
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10">
           {factors.map((f, i) => (
-            <div key={f.name} className="border-t border-[var(--color-ink-deep)] pt-5">
-              <p className="eyebrow tnum">{String(i + 1).padStart(2, "0")}</p>
+            <div
+              key={f.name}
+              className="border-t pt-5"
+              style={{ borderColor: "var(--color-paper)" }}
+            >
+              <p
+                className="eyebrow tnum"
+                style={{ color: "var(--color-accent)" }}
+              >
+                {String(i + 1).padStart(2, "0")}
+              </p>
               <h3
                 className="display text-xl mt-3"
-                style={{ color: INK }}
+                style={{ color: "var(--color-paper)" }}
               >
                 {f.name}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[var(--color-body)]">
+              <p
+                className="mt-2 text-sm leading-relaxed"
+                style={{ color: "rgba(247, 244, 237, 0.75)" }}
+              >
                 {f.blurb}
               </p>
             </div>
@@ -324,24 +344,27 @@ function HowItWorks() {
 
 function SampleQuote() {
   return (
-    <section className="border-b border-[var(--color-line)] bg-[var(--color-paper-deep)]">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-20">
-        <p className="eyebrow">From a sample report</p>
+    <section
+      className="border-b border-[var(--color-line-strong)]"
+      style={{ background: "var(--color-paper-deep)" }}
+    >
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-20 md:py-24">
+        <p className="eyebrow">From a sample analyst&apos;s note</p>
         <blockquote
           className="display mt-8 leading-[1.25]"
-          style={{ fontSize: "clamp(1.5rem, 3vw, 2.25rem)", color: INK }}
+          style={{ fontSize: "clamp(1.625rem, 3.25vw, 2.5rem)", color: INK }}
         >
           &ldquo;The deal shows strong yield and refinance potential, with steady
           area growth and demand indicators above the regional average.
           Selective licensing and an asking price near the area median are
           the main concerns. Review with a qualified broker before proceeding.&rdquo;
         </blockquote>
-        <p className="mt-8 text-xs tracking-[0.14em] uppercase text-[var(--color-muted)]">
-          Capora analyst&apos;s note · Levenshulme M19 3PT · score 72
-        </p>
-        <div className="mt-10">
+        <div className="mt-10 flex items-center justify-between flex-wrap gap-4 border-t border-[var(--color-line)] pt-6">
+          <p className="text-xs tracking-[0.14em] uppercase text-[var(--color-muted)]">
+            Capora · Levenshulme M19 3PT · score 72
+          </p>
           <Link href="/sample">
-            <Button variant="outline">
+            <Button variant="outline" size="sm">
               View the sample report →
             </Button>
           </Link>
@@ -391,22 +414,35 @@ function HonestLimits() {
 
 function Pricing() {
   return (
-    <section className="border-b border-[var(--color-line)] bg-[var(--color-paper-deep)]">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-20 text-center">
-        <p className="eyebrow">Pricing</p>
+    <section
+      className="border-b border-[var(--color-ink-deep)]"
+      style={{ background: "var(--color-ink-deep)", color: "var(--color-paper)" }}
+    >
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-24 md:py-28 text-center">
+        <p className="eyebrow" style={{ color: "var(--color-accent)" }}>
+          Pricing
+        </p>
         <h2
           className="display mt-4 leading-[1.05]"
-          style={{ fontSize: "clamp(2rem, 4vw, 3rem)", color: INK }}
+          style={{ fontSize: "clamp(2.25rem, 4.5vw, 3.25rem)", color: "var(--color-paper)" }}
         >
           Free while we&apos;re in early access.
         </h2>
-        <p className="mt-5 text-sm max-w-xl mx-auto text-[var(--color-body)]">
-          5 full deal reports a month. No card required. Paid tiers — unlimited
-          deals, refurb scan, mortgage stress-testing — coming soon.
+        <p
+          className="mt-5 text-sm max-w-xl mx-auto"
+          style={{ color: "rgba(247, 244, 237, 0.8)" }}
+        >
+          5 full deal reports a month. No card required. Paid tiers —
+          unlimited deals, refurb scan, mortgage stress-testing — coming
+          soon.
         </p>
         <div className="mt-10">
           <Link href="/signup">
-            <Button variant="primary" size="lg">
+            <Button
+              variant="accent"
+              size="lg"
+              className="!bg-[var(--color-accent)] !text-white"
+            >
               Create your free account →
             </Button>
           </Link>
@@ -453,7 +489,7 @@ function Footer() {
           <div>
             <Logo size="sm" />
             <p className="mt-3 text-xs text-[var(--color-muted)]">
-              © 2026 Daramola Consulting · Built in Manchester
+              © {new Date().getFullYear()} Capora · Built in Manchester
             </p>
           </div>
           <nav className="flex gap-6 text-[11px] tracking-[0.14em] uppercase font-semibold">

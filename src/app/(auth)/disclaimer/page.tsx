@@ -27,7 +27,7 @@ const POINTS = [
   {
     n: "IV",
     title: "Your decisions are yours.",
-    body: "Capora and Daramola Consulting accept no liability for investment outcomes based on use of this tool.",
+    body: "Capora accepts no liability for investment outcomes based on use of this tool.",
   },
 ];
 
