@@ -5,7 +5,11 @@ import {
   normaliseType,
   extractPostcode,
 } from "./types";
-import { reverseGeocodePostcode } from "@/lib/geo/reverseGeocode";
+import {
+  geocodeAddress,
+  reverseGeocodePostcode,
+} from "@/lib/geo/reverseGeocode";
+import { extractListingCoords } from "./extractCoords";
 
 const PROPERTY_TYPES = [
   "terraced",
@@ -117,13 +121,26 @@ export async function scrapeWithOpenAI(
     ? d.postcode.trim().toUpperCase()
     : extractPostcode(d.address ?? null);
 
-  // Listings hide the inward part of the postcode. If we have coords, look up
-  // the full postcode via postcodes.io. Fall back to whatever the page showed.
+  // Listings hide the inward part of the postcode. Three escalating attempts
+  // to recover the full code:
+  //   1. coords the AI extracted (rare — search snippets usually omit them)
+  //   2. fetch the listing HTML ourselves and regex the embedded lat/lng
+  //   3. geocode the visible address via Nominatim
   let postcode = rawPostcode;
   const hasInward = rawPostcode && /\s\d[A-Z]{2}$/.test(rawPostcode);
-  if (!hasInward && d.latitude != null && d.longitude != null) {
-    const resolved = await reverseGeocodePostcode(d.latitude, d.longitude);
-    if (resolved) postcode = resolved;
+  if (!hasInward) {
+    let coords: { lat: number; lon: number } | null =
+      d.latitude != null && d.longitude != null
+        ? { lat: d.latitude, lon: d.longitude }
+        : null;
+
+    if (!coords) coords = await extractListingCoords(url);
+    if (!coords && d.address) coords = await geocodeAddress(d.address);
+
+    if (coords) {
+      const resolved = await reverseGeocodePostcode(coords.lat, coords.lon);
+      if (resolved) postcode = resolved;
+    }
   }
 
   return {
