@@ -648,7 +648,7 @@ function FinalCTA() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white/40 text-white hover:bg-white/10"
+                  className="!bg-transparent !border-white/50 !text-white hover:!bg-white/10"
                 >
                   Sign in
                 </Button>
