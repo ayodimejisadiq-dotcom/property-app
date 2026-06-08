@@ -5,6 +5,7 @@ import {
   normaliseType,
   extractPostcode,
 } from "./types";
+import { reverseGeocodePostcode } from "@/lib/geo/reverseGeocode";
 
 const PROPERTY_TYPES = [
   "terraced",
@@ -24,6 +25,8 @@ const ResponseSchema = z.object({
   propertyType: z.enum(PROPERTY_TYPES).nullable(),
   monthlyRentPounds: z.number().int().nullable(),
   isRental: z.boolean().nullable(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
   notes: z.string().nullable(),
 });
 
@@ -42,6 +45,8 @@ Use the web_search tool to fetch the URL and read the page contents. Then return
   "propertyType": "terraced" | "semi" | "detached" | "flat" | "bungalow" | "other" | null,
   "monthlyRentPounds": integer | null,
   "isRental": boolean | null,
+  "latitude": number | null,
+  "longitude": number | null,
   "notes": string | null
 }
 
@@ -51,7 +56,8 @@ Rules:
 - monthlyRentPounds: only if it's clearly a rental listing (URL contains '/to-rent/' on Zoopla, or a 'pcm'/'pw' price). Convert pcw → pcm by * 4.33.
 - isRental: true for to-rent listings, false for sale listings.
 - propertyType: map 'Terraced' → 'terraced', 'Semi-Detached' → 'semi', 'Detached' → 'detached', 'Flat'/'Apartment'/'Maisonette' → 'flat', 'Bungalow' → 'bungalow', anything else → 'other'.
-- postcode: full UK postcode (e.g. 'M19 3PT'), uppercase. Use null if you can't find one.
+- postcode: full UK postcode (e.g. 'M19 3PT'), uppercase. Listings usually only show the outward code ('M19') — that's fine, return what's visible. Use null if you can't find one.
+- latitude / longitude: extract the property's coordinates if present. Rightmove embeds them in JSON on the page (look for "latitude", "longitude" fields, or a static map URL like 'maps.googleapis.com/maps/api/staticmap?center=53.44,-2.18'). Zoopla embeds them similarly. Return null if not found. These are critical — we use them to look up the full postcode.
 - Never invent data. Use null for any field you can't verify on the page.
 - notes: short string explaining anything unusual (e.g. 'price is guide only', 'leasehold', 'shared ownership'). Null if nothing to flag.
 
@@ -107,9 +113,18 @@ export async function scrapeWithOpenAI(
     ? "zoopla"
     : "rightmove";
 
-  const postcode = d.postcode
+  const rawPostcode = d.postcode
     ? d.postcode.trim().toUpperCase()
     : extractPostcode(d.address ?? null);
+
+  // Listings hide the inward part of the postcode. If we have coords, look up
+  // the full postcode via postcodes.io. Fall back to whatever the page showed.
+  let postcode = rawPostcode;
+  const hasInward = rawPostcode && /\s\d[A-Z]{2}$/.test(rawPostcode);
+  if (!hasInward && d.latitude != null && d.longitude != null) {
+    const resolved = await reverseGeocodePostcode(d.latitude, d.longitude);
+    if (resolved) postcode = resolved;
+  }
 
   return {
     source,
