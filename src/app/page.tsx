@@ -668,16 +668,76 @@ function FinalCTA() {
 }
 
 function Footer() {
+  const columns = [
+    {
+      heading: "Product",
+      links: [
+        { href: "/#how-it-works", label: "How it works" },
+        { href: "/sample", label: "Sample report" },
+        { href: "/signup", label: "Get started" },
+        { href: "/login", label: "Sign in" },
+      ],
+    },
+    {
+      heading: "Company",
+      links: [
+        { href: "/about", label: "About" },
+        { href: "mailto:hello@capora.co.uk", label: "Contact" },
+      ],
+    },
+    {
+      heading: "Legal",
+      links: [
+        { href: "/terms", label: "Terms" },
+        { href: "/privacy", label: "Privacy" },
+        { href: "/disclaimer", label: "Disclaimer" },
+      ],
+    },
+  ];
+
   return (
-    <footer className="bg-white">
-      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-          <Logo size="sm" />
+    <footer className="bg-white border-t border-line">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-12">
+        <div className="grid gap-10 md:grid-cols-4">
+          <div>
+            <Logo size="sm" />
+            <p className="mt-4 text-sm text-muted leading-relaxed max-w-xs">
+              A second opinion on every UK BTL deal. Scored across seven
+              factors, sourced from real data.
+            </p>
+          </div>
+          {columns.map((col) => (
+            <div key={col.heading}>
+              <p className="text-xs font-semibold uppercase tracking-wider text-ink mb-3">
+                {col.heading}
+              </p>
+              <ul className="space-y-2">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="text-sm text-body hover:text-[var(--color-primary)] transition-colors"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-10 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <p className="text-sm text-muted">
             © 2026 Daramola Consulting · Built in Manchester
           </p>
+          <p className="text-xs text-muted">
+            Capora is a trading name of Daramola Consulting Ltd, registered in
+            England &amp; Wales.
+          </p>
         </div>
-        <p className="text-xs italic text-faint leading-relaxed">
+
+        <p className="mt-6 text-xs italic text-faint leading-relaxed">
           Capora is an analytical tool, not a financial adviser. Scores and
           reports are for research only and must not be treated as a
           recommendation to buy, sell or finance any property. Always commission
