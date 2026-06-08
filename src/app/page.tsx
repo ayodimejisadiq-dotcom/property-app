@@ -232,7 +232,7 @@ function WhatYouGet() {
             One score. Seven factors. No fluff.
           </h2>
         </div>
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
+        <div className="mt-12 flex md:grid md:grid-cols-3 gap-6 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-3 md:overflow-visible md:mx-0 md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {items.map(({ icon: Icon, title, body, tone }) => {
             const ringColour =
               tone === "primary"
@@ -249,7 +249,7 @@ function WhatYouGet() {
             return (
               <div
                 key={title}
-                className="group relative rounded-xl bg-white border border-line p-6 hover:shadow-md transition-shadow"
+                className="group relative snap-center shrink-0 w-[78vw] md:w-auto rounded-xl bg-white border border-line p-6 hover:shadow-md transition-shadow"
               >
                 <div
                   className={`absolute inset-x-6 top-0 h-1 rounded-b-full bg-gradient-to-r ${ringColour} opacity-70`}
@@ -327,11 +327,11 @@ function SevenFactors() {
             . Each factor explains itself with the inputs and sources we used.
           </p>
         </div>
-        <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="mt-10 flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-3 sm:overflow-visible sm:mx-0 sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {factors.map(({ icon: Icon, name, blurb }) => (
             <div
               key={name}
-              className="rounded-lg border border-line bg-white p-5 flex gap-4"
+              className="snap-center shrink-0 w-[78vw] sm:w-auto rounded-lg border border-line bg-white p-5 flex gap-4"
             >
               <div className="h-9 w-9 rounded-md bg-[var(--color-primary-light)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
                 <Icon className="h-4.5 w-4.5" />
@@ -345,6 +345,9 @@ function SevenFactors() {
             </div>
           ))}
         </div>
+        <p className="mt-3 text-center text-xs text-muted sm:hidden">
+          Swipe to see all seven →
+        </p>
       </div>
     </section>
   );
@@ -376,9 +379,12 @@ function HowItWorks() {
             Three steps. Under a minute.
           </h2>
         </div>
-        <div className="mt-10 grid md:grid-cols-3 gap-6">
+        <div className="mt-10 flex md:grid md:grid-cols-3 gap-6 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-3 md:overflow-visible md:mx-0 md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           {steps.map(({ n, title, body }) => (
-            <div key={n} className="rounded-lg border border-line p-6">
+            <div
+              key={n}
+              className="snap-center shrink-0 w-[78vw] md:w-auto rounded-lg border border-line p-6 bg-white"
+            >
               <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-primary)] text-white font-semibold text-sm">
                 {n}
               </span>
@@ -387,6 +393,9 @@ function HowItWorks() {
             </div>
           ))}
         </div>
+        <p className="mt-3 text-center text-xs text-muted md:hidden">
+          Swipe →
+        </p>
       </div>
     </section>
   );
