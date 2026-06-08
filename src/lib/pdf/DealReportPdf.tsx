@@ -3,12 +3,11 @@ import * as React from "react";
 import {
   Document,
   Page,
+  Path,
   StyleSheet,
   Svg,
   Text,
   View,
-  Circle,
-  Line,
 } from "@react-pdf/renderer";
 
 const colours = {
@@ -317,21 +316,20 @@ export function DealReportPdf({ deal }: { deal: DealLike }) {
           <View style={styles.brand}>
             <View style={styles.brandMark}>
               <Svg viewBox="0 0 24 24" width="11" height="11">
-                <Circle
-                  cx="10"
-                  cy="10"
-                  r="6"
+                <Path
+                  d="M4 14 L12 5 L20 14"
                   stroke="white"
                   strokeWidth="2.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   fill="none"
                 />
-                <Line
-                  x1="14.5"
-                  y1="14.5"
-                  x2="20"
-                  y2="20"
+                <Path
+                  d="M6 18 L18 18"
                   stroke="white"
                   strokeWidth="2.4"
+                  strokeLinecap="round"
+                  fill="none"
                 />
               </Svg>
             </View>

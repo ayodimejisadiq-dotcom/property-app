@@ -44,8 +44,8 @@ export function AuthSplit({ variant, children }: AuthSplitProps) {
                 strokeLinejoin="round"
                 className="h-[60%] w-[60%]"
               >
-                <circle cx="10" cy="10" r="6" />
-                <line x1="14.5" y1="14.5" x2="20" y2="20" />
+                <path d="M4 14 L12 5 L20 14" />
+                <path d="M6 18 L18 18" />
               </svg>
             </span>
             <span className="font-semibold text-lg lowercase tracking-tight">
