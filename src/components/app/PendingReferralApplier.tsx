@@ -76,7 +76,7 @@ export function PendingReferralApplier({
     <div className="border-b border-line">
       <div
         className={cn(
-          "max-w-6xl mx-auto px-4 py-2 text-sm flex items-center justify-between gap-3",
+          "max-w-6xl mx-auto px-5 sm:px-6 py-2 text-sm flex items-center justify-between gap-3",
           status.kind === "success" ? "text-ink" : "text-ink",
         )}
       >

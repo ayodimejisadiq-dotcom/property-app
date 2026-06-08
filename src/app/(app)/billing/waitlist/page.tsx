@@ -32,7 +32,7 @@ export default async function WaitlistPage({
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-16">
+    <div className="max-w-2xl mx-auto px-5 sm:px-6 py-16">
       <Card>
         <CardContent className="pt-10 pb-10 text-center">
           <div className="h-12 w-12 rounded-full bg-[var(--color-success)]/15 text-[var(--color-success)] flex items-center justify-center mx-auto mb-4">

@@ -103,7 +103,7 @@ export default async function BillingPage({
     : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10">
       <div className="mb-8 max-w-2xl">
         <h1 className="text-2xl font-bold text-ink">Plans &amp; billing</h1>
         <p className="text-muted mt-1">

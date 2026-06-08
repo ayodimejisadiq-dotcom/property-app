@@ -272,7 +272,7 @@ export default async function DealPage({
   const scoredFactors = factors.filter((f) => f.score != null).length;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-6 md:py-10 space-y-6">
+    <div className="max-w-5xl mx-auto px-5 sm:px-6 py-6 md:py-10 space-y-6">
       <Link
         href="/dashboard"
         className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
@@ -287,16 +287,15 @@ export default async function DealPage({
           style={{ background: "var(--color-primary)" }}
           aria-hidden
         />
-        <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="p-5 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-5 md:gap-6">
           <div className="min-w-0">
-            <p className="text-sm text-muted">{deal.postcode}</p>
-            <h1 className="text-2xl md:text-3xl font-bold text-ink mt-1 break-words">
+            <p className="text-xs sm:text-sm text-muted">{deal.postcode}</p>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-ink mt-1 break-words leading-tight">
               {deal.address}
             </h1>
-            <p className="text-sm text-muted mt-2">
+            <p className="text-xs sm:text-sm text-muted mt-2 leading-relaxed">
               {deal.bedrooms} bed · {prettyType(deal.property_type)} ·{" "}
-              {formatGBP(deal.price)} ·{" "}
-              {formatGBP(deal.monthly_rent)} pcm
+              {formatGBP(deal.price)} · {formatGBP(deal.monthly_rent)} pcm
             </p>
             {deal.source_url && (
               <a
@@ -310,18 +309,23 @@ export default async function DealPage({
               </a>
             )}
           </div>
-          <div className="flex items-center gap-5">
-            <ScoreGauge score={deal.composite_score} />
-            <div>
+          <div className="flex items-center gap-4 sm:gap-5 shrink-0">
+            <div className="block md:hidden">
+              <ScoreGauge score={deal.composite_score} size={120} />
+            </div>
+            <div className="hidden md:block">
+              <ScoreGauge score={deal.composite_score} />
+            </div>
+            <div className="min-w-0">
               <span
                 className={cn(
-                  "text-xs font-medium px-2.5 py-1 rounded-full",
+                  "text-[10px] sm:text-xs font-medium px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full whitespace-nowrap",
                   bandPillClass(band),
                 )}
               >
                 {bandLabel(band)}
               </span>
-              <p className="text-xs text-muted mt-2 max-w-[14ch]">
+              <p className="text-[11px] sm:text-xs text-muted mt-2 max-w-[14ch]">
                 {scoredFactors} of 7 factors scored
               </p>
             </div>

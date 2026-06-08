@@ -41,7 +41,7 @@ export function AnnouncementBar({
 
   return (
     <div className="relative bg-[var(--color-primary)] text-white">
-            <div className="relative max-w-6xl mx-auto px-4 py-2 flex items-center gap-3 text-sm">
+            <div className="relative max-w-6xl mx-auto px-5 sm:px-6 py-2 flex items-center gap-3 text-sm">
         <Sparkles className="h-4 w-4 shrink-0" />
         <p className="flex-1 leading-snug">{message}</p>
         {href && (

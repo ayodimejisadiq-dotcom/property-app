@@ -17,7 +17,7 @@ export function LegalShell({ title, lastUpdated, children }: LegalShellProps) {
   return (
     <div className="min-h-screen bg-white">
       <header className="border-b border-line">
-        <div className="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-5 sm:px-6 h-14 flex items-center justify-between">
           <Link href="/" className="flex items-center">
             <Logo size="sm" />
           </Link>
@@ -30,7 +30,7 @@ export function LegalShell({ title, lastUpdated, children }: LegalShellProps) {
           </Link>
         </div>
       </header>
-      <main className="max-w-3xl mx-auto px-4 py-10 md:py-16">
+      <main className="max-w-3xl mx-auto px-5 sm:px-6 py-10 md:py-16">
         <p className="text-xs uppercase tracking-wider text-muted">Legal</p>
         <h1 className="text-3xl md:text-4xl font-bold text-ink mt-1">{title}</h1>
         <p className="text-sm text-muted mt-2">

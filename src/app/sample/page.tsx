@@ -51,7 +51,7 @@ export default async function SamplePage() {
   return (
     <div className="min-h-screen bg-fill">
       <header className="border-b border-line bg-white">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-5 sm:px-6 h-14 flex items-center justify-between">
           <Link href={backHref} className="flex items-center gap-2 text-sm text-muted hover:text-ink">
             <ArrowLeft className="h-4 w-4" />
             {user ? "Back to dashboard" : "Back to home"}
@@ -60,7 +60,7 @@ export default async function SamplePage() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 py-8 md:py-12">
+      <main className="max-w-5xl mx-auto px-5 sm:px-6 py-8 md:py-12">
         <div className="mb-6 inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-[var(--color-primary-light)] text-[var(--color-primary)]">
           Sample report — illustrative only
         </div>

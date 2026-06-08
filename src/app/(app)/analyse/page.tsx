@@ -136,7 +136,7 @@ export default function AnalysePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 md:py-10">
+    <div className="max-w-4xl mx-auto px-5 sm:px-6 py-8 md:py-10">
       <div
         className="mb-6 rounded-xl text-white p-6 md:p-7 relative overflow-hidden shadow-md"
         style={{ background: "var(--color-primary)" }}

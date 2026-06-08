@@ -47,7 +47,7 @@ export default async function LandingPage() {
 function PublicNav() {
   return (
     <header className="border-b border-line">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 h-16 flex items-center justify-between">
         <Logo size="md" />
         <nav className="flex items-center gap-2">
           <Link href="/login">
@@ -72,18 +72,15 @@ function Hero() {
     >
       
       
-      <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
+      <div className="relative max-w-6xl mx-auto px-5 sm:px-6 py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center">
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm border border-line text-[var(--color-primary)]">
             <Sparkles className="h-3 w-3" />
             UK BTL deal analyser · early access
           </span>
-          <h1 className="mt-4 text-4xl md:text-6xl font-bold text-ink tracking-tight leading-[1.05]">
+          <h1 className="mt-4 text-[2.5rem] sm:text-5xl md:text-6xl font-bold text-ink tracking-tight leading-[1.05]">
             Score property deals{" "}
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ color: "var(--color-primary)" }}
-            >
+            <span style={{ color: "var(--color-primary)" }}>
               in seconds.
             </span>
           </h1>
@@ -189,7 +186,7 @@ function HeroPreview() {
 function ProblemStrip() {
   return (
     <section className="border-b border-line bg-card">
-      <div className="max-w-4xl mx-auto px-4 py-10 text-center">
+      <div className="max-w-4xl mx-auto px-5 sm:px-6 py-10 text-center">
         <p className="text-lg md:text-xl text-ink leading-relaxed">
           Most BTL investors decide on gut feel, an asking price, and a
           calculator from 2014.{" "}
@@ -226,7 +223,7 @@ function WhatYouGet() {
   ];
   return (
     <section className="border-b border-line">
-      <div className="max-w-6xl mx-auto px-4 py-16 md:py-20">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16 md:py-20">
         <div className="text-center max-w-2xl mx-auto">
           <span className="inline-block text-xs font-semibold uppercase tracking-wider text-[var(--color-primary)] mb-3">
             What you get
@@ -314,7 +311,7 @@ function SevenFactors() {
   ];
   return (
     <section className="border-b border-line bg-card">
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
             The seven factors
@@ -373,7 +370,7 @@ function HowItWorks() {
   ];
   return (
     <section id="how-it-works" className="border-b border-line">
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
             Three steps. Under a minute.
@@ -414,7 +411,7 @@ function SampleDeal() {
 
   return (
     <section className="border-b border-line bg-card">
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
             What a Capora report looks like
@@ -565,7 +562,7 @@ function HonestLimits() {
   ];
   return (
     <section className="border-b border-line">
-      <div className="max-w-6xl mx-auto px-4 py-16">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
             Honest about the limits
@@ -596,7 +593,7 @@ function HonestLimits() {
 function Pricing() {
   return (
     <section className="border-b border-line bg-card">
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center">
+      <div className="max-w-4xl mx-auto px-5 sm:px-6 py-16 text-center">
         <h2 className="text-2xl md:text-3xl font-bold text-ink">
           Free while we&apos;re in early access
         </h2>
@@ -620,16 +617,16 @@ function Pricing() {
 function FinalCTA() {
   return (
     <section className="border-b border-line">
-      <div className="max-w-5xl mx-auto px-4 py-12 md:py-16">
+      <div className="max-w-5xl mx-auto px-5 sm:px-6 py-12 md:py-16">
         <div
-          className="relative rounded-2xl overflow-hidden text-center px-6 py-16 md:py-20 text-white"
+          className="relative rounded-2xl overflow-hidden text-center px-5 sm:px-6 py-12 sm:py-16 md:py-20 text-white"
           style={{ background: "var(--color-primary)" }}
         >
           
           
           <div className="relative">
             <FileText className="h-10 w-10 mx-auto mb-4 opacity-90" />
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+            <h2 className="text-[1.75rem] sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight">
               Run your next deal through Capora first.
             </h2>
             <p className="mt-4 text-white/80 max-w-md mx-auto">
@@ -664,7 +661,7 @@ function FinalCTA() {
 function Footer() {
   return (
     <footer className="bg-white">
-      <div className="max-w-6xl mx-auto px-4 py-10">
+      <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
           <Logo size="sm" />
           <p className="text-sm text-muted">

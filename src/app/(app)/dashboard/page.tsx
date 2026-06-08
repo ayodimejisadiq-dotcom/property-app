@@ -107,7 +107,7 @@ export default async function DashboardPage() {
       : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-10">
+    <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
         <div>
           <div className="flex items-center gap-3 flex-wrap">
@@ -130,7 +130,7 @@ export default async function DashboardPage() {
         </Link>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 lg:grid-cols-4 mb-8">
         <StatCard
           icon={FileText}
           label="Total deals"
@@ -244,7 +244,7 @@ function StatCard({
         </div>
         <p
           className={cn(
-            "text-3xl font-bold mt-1",
+            "text-2xl sm:text-3xl font-bold mt-1",
             valueClassName ?? "text-ink",
           )}
         >

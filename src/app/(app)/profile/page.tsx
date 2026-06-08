@@ -47,7 +47,7 @@ export default async function ProfilePage() {
   const origin = await resolveOrigin();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-10">
+    <div className="max-w-4xl mx-auto px-5 sm:px-6 py-10">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-ink">Your profile</h1>
         <p className="text-muted mt-1">

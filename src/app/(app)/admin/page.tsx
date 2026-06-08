@@ -139,7 +139,7 @@ export default async function AdminPage() {
   })) as AuditEvent[];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 py-10">
+    <div className="max-w-5xl mx-auto px-5 sm:px-6 py-10">
       <div className="mb-8">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-bold text-ink">Admin</h1>

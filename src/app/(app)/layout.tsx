@@ -45,7 +45,7 @@ export default async function AppLayout({
   return (
     <div className="min-h-screen flex flex-col">
       <header className="border-b border-line bg-white sticky top-0 z-30">
-        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 h-14 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center">
             <Logo size="sm" />
           </Link>
