@@ -8,49 +8,50 @@ interface LogoProps {
 }
 
 const SIZES = {
-  sm: "text-base",
-  md: "text-lg",
-  lg: "text-2xl",
+  sm: { box: "h-7 w-7", text: "text-base" },
+  md: { box: "h-9 w-9", text: "text-lg" },
+  lg: { box: "h-12 w-12", text: "text-2xl" },
 };
 
-/**
- * Editorial wordmark — serif, lowercase, single dot accent.
- * Replaces the old indigo-block logo for the redesign.
- */
 export function Logo({
   size = "md",
   showWordmark = true,
   className,
 }: LogoProps) {
-  if (!showWordmark) {
-    return (
-      <span
-        className={cn("inline-block w-2 h-2", className)}
-        style={{ background: "var(--color-accent)" }}
-        aria-label="Capora"
-      />
-    );
-  }
+  const s = SIZES[size];
   return (
-    <span
-      className={cn(
-        "inline-flex items-baseline gap-1 font-serif tracking-tight text-ink",
-        SIZES[size],
-        className,
-      )}
-      style={{ fontFamily: "var(--font-serif)" }}
-    >
-      <span className="lowercase">capora</span>
+    <span className={cn("inline-flex items-center gap-2", className)}>
       <span
-        className="inline-block"
-        style={{
-          width: "0.32em",
-          height: "0.32em",
-          background: "var(--color-accent)",
-          marginBottom: "0.08em",
-        }}
+        className={cn(
+          "rounded-lg bg-[var(--color-primary)] text-white flex items-center justify-center shrink-0",
+          s.box,
+        )}
         aria-hidden
-      />
+      >
+        {/* magnifying lens — abstract, leans on indigo background */}
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.25"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-[60%] w-[60%]"
+        >
+          <circle cx="10" cy="10" r="6" />
+          <line x1="14.5" y1="14.5" x2="20" y2="20" />
+        </svg>
+      </span>
+      {showWordmark && (
+        <span
+          className={cn(
+            "font-semibold tracking-tight text-ink lowercase",
+            s.text,
+          )}
+        >
+          capora
+        </span>
+      )}
     </span>
   );
 }

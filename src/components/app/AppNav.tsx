@@ -32,12 +32,13 @@ export function AppNav({ items, isAdmin, signOutAction }: AppNavProps) {
 
   return (
     <>
-      <nav className="hidden md:flex items-center gap-6 text-[11px] tracking-[0.14em] uppercase font-semibold">
+      {/* Desktop nav */}
+      <nav className="hidden md:flex items-center gap-1 text-sm">
         {allItems.map((item) => (
           <Link
             key={item.href}
             href={item.href}
-            className="text-[var(--color-ink-deep)] hover:underline underline-offset-4"
+            className="px-3 py-1.5 rounded-md text-body hover:bg-fill"
           >
             {item.label}
           </Link>
@@ -45,22 +46,24 @@ export function AppNav({ items, isAdmin, signOutAction }: AppNavProps) {
         <form action={signOutAction}>
           <button
             type="submit"
-            className="text-[var(--color-muted)] hover:text-[var(--color-ink-deep)] tracking-[0.14em] uppercase text-[11px] font-semibold"
+            className="px-3 py-1.5 rounded-md text-body hover:bg-fill text-sm font-medium"
           >
             Sign out
           </button>
         </form>
       </nav>
 
+      {/* Mobile hamburger */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
-        className="md:hidden p-2 -mr-2 text-[var(--color-ink-deep)] hover:opacity-70"
+        className="md:hidden p-2 -mr-2 rounded-md text-ink hover:bg-fill"
       >
         <Menu className="h-5 w-5" />
       </button>
 
+      {/* Drawer */}
       <div
         className={cn(
           "md:hidden fixed inset-0 z-50 transition",
@@ -70,24 +73,24 @@ export function AppNav({ items, isAdmin, signOutAction }: AppNavProps) {
       >
         <div
           className={cn(
-            "absolute inset-0 bg-[var(--color-ink-deep)]/40 transition-opacity",
+            "absolute inset-0 bg-ink/40 transition-opacity",
             open ? "opacity-100" : "opacity-0",
           )}
           onClick={() => setOpen(false)}
         />
         <div
           className={cn(
-            "absolute top-0 right-0 bottom-0 w-[82%] max-w-sm bg-[var(--color-paper)] border-l border-[var(--color-line-strong)] transition-transform safe-top",
+            "absolute top-0 right-0 bottom-0 w-[82%] max-w-sm bg-white shadow-xl transition-transform safe-top",
             open ? "translate-x-0" : "translate-x-full",
           )}
         >
-          <div className="flex items-center justify-between p-4 border-b border-[var(--color-line-strong)]">
+          <div className="flex items-center justify-between p-4 border-b border-line">
             <Logo size="sm" />
             <button
               type="button"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
-              className="p-2 -mr-2 text-[var(--color-ink-deep)]"
+              className="p-2 -mr-2 rounded-md text-ink hover:bg-fill"
             >
               <X className="h-5 w-5" />
             </button>
@@ -98,16 +101,16 @@ export function AppNav({ items, isAdmin, signOutAction }: AppNavProps) {
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="px-4 py-3.5 text-sm tracking-[0.14em] uppercase font-semibold text-[var(--color-ink-deep)] hover:underline underline-offset-4"
+                className="px-4 py-3 rounded-md text-base text-ink hover:bg-fill active:bg-fill font-medium"
               >
                 {item.label}
               </Link>
             ))}
-            <div className="border-t border-[var(--color-line)] my-2" />
+            <div className="border-t border-line my-2" />
             <form action={signOutAction}>
               <button
                 type="submit"
-                className="w-full text-left px-4 py-3.5 text-sm tracking-[0.14em] uppercase font-semibold text-[var(--color-muted)]"
+                className="w-full text-left px-4 py-3 rounded-md text-base text-body hover:bg-fill font-medium"
               >
                 Sign out
               </button>

@@ -26,8 +26,8 @@ export function PromoCard({
 }: PromoCardProps) {
   const bg =
     tone === "primary"
-      ? "var(--gradient-primary)"
-      : "linear-gradient(135deg, var(--color-accent) 0%, var(--color-primary) 100%)";
+      ? "var(--color-primary)"
+      : "var(--color-accent)";
   return (
     <div
       className={cn(

@@ -136,27 +136,36 @@ export default function AnalysePage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-5 sm:px-8 py-12">
-      <div className="flex items-center justify-between text-[10px] tracking-[0.18em] uppercase" style={{ color: "var(--color-ink-deep)" }}>
-        <span>Capora · New deal</span>
-        <span>~30 seconds · Free tier 5/mo</span>
+    <div className="max-w-4xl mx-auto px-4 py-8 md:py-10">
+      <div
+        className="mb-6 rounded-xl text-white p-6 md:p-7 relative overflow-hidden shadow-md"
+        style={{ background: "var(--color-primary)" }}
+      >
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-white/15 blur-2xl"
+        />
+        <div className="relative">
+          <span className="inline-block text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/15 mb-2">
+            New deal
+          </span>
+          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Analyse a deal
+          </h1>
+          <p className="text-white/85 mt-1.5 max-w-xl text-sm md:text-base">
+            Paste a Rightmove or Zoopla URL — or enter the property details
+            manually. We&apos;ll score the deal across seven factors and write
+            a plain-English report.
+          </p>
+          <div className="mt-3 flex items-center gap-3 flex-wrap text-xs text-white/80">
+            <span className="inline-flex items-center gap-1">
+              ⚡ ~30 seconds
+            </span>
+            <span className="opacity-50">·</span>
+            <span>Free tier: 5 reports / month</span>
+          </div>
+        </div>
       </div>
-      <div className="mt-3 rule" />
-
-      <header className="pt-10 pb-10">
-        <p className="eyebrow">Analyse</p>
-        <h1
-          className="display mt-4 leading-[1.05]"
-          style={{ fontSize: "clamp(2.5rem, 5vw, 3.75rem)", color: "var(--color-ink-deep)" }}
-        >
-          A new deal.
-        </h1>
-        <p className="mt-5 text-sm text-[var(--color-body)] max-w-lg">
-          Paste a Rightmove or Zoopla URL — or enter the property details
-          manually. We&apos;ll score the deal across seven factors and write a
-          plain-English analyst&apos;s note.
-        </p>
-      </header>
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-6">

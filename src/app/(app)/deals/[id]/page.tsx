@@ -1,18 +1,26 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+  ArrowUpRight,
+  Building2,
+  Calendar,
+  CheckCircle2,
+  ExternalLink,
+  Lock,
+  PoundSterling,
+  ShieldAlert,
+  Sparkles,
+  TrendingUp,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
-import { cn, scoreBand } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { cn, scoreBand, bandColor } from "@/lib/utils";
 import {
   DEFAULT_LEGAL_COST,
   DEFAULT_SURVEY_COST,
 } from "@/lib/constants";
 import { computeFinancials } from "@/lib/financials";
-
-/**
- * Editorial / financial-press proof-of-concept rendering.
- * No gradients, no rounded cards, no blobs, no shadows.
- * Hairline rules, off-white paper canvas, serif headlines, tabular numerals.
- */
 
 const FACTOR_LABELS: Record<string, string> = {
   yield_score: "Yield",
@@ -24,45 +32,22 @@ const FACTOR_LABELS: Record<string, string> = {
   licensing_risk_score: "Licensing risk",
 };
 
-const ACCENT = "var(--color-accent-signal)";
-const INK = "var(--color-ink-deep)";
-
-function fmtGBP(
-  pence: number | null | undefined,
-  opts?: { signed?: boolean; whole?: boolean },
-) {
+function formatGBP(pence: number | null | undefined, opts?: { signed?: boolean }) {
   if (pence == null) return "—";
   const value = pence / 100;
   const formatted = new Intl.NumberFormat("en-GB", {
     style: "currency",
     currency: "GBP",
-    maximumFractionDigits: opts?.whole === false ? 2 : 0,
+    maximumFractionDigits: 0,
   }).format(Math.abs(value));
   if (opts?.signed && value < 0) return `−${formatted}`;
   if (opts?.signed && value > 0) return `+${formatted}`;
   return value < 0 ? `−${formatted}` : formatted;
 }
 
-function fmtPct(bps: number | null | undefined, dp = 1) {
+function formatPercent(bps: number | null | undefined, dp = 1): string {
   if (bps == null) return "—";
   return `${(bps / 100).toFixed(dp)}%`;
-}
-
-function prettyType(t: string) {
-  switch (t) {
-    case "terraced":
-      return "Terraced";
-    case "semi":
-      return "Semi-detached";
-    case "detached":
-      return "Detached";
-    case "flat":
-      return "Flat / apartment";
-    case "bungalow":
-      return "Bungalow";
-    default:
-      return "Other";
-  }
 }
 
 interface DealRow {
@@ -99,7 +84,33 @@ interface DealRow {
   created_at: string;
 }
 
-function bandWord(b: ReturnType<typeof scoreBand>) {
+function bandClass(b: ReturnType<typeof scoreBand>) {
+  switch (b) {
+    case "STRONG":
+      return "bg-[var(--color-success)]";
+    case "MODERATE":
+      return "bg-[var(--color-warning)]";
+    case "WEAK":
+      return "bg-[var(--color-danger)]";
+    default:
+      return "bg-faint";
+  }
+}
+
+function bandPillClass(b: ReturnType<typeof scoreBand>) {
+  switch (b) {
+    case "STRONG":
+      return "bg-[var(--color-success)]/10 text-[var(--color-success)]";
+    case "MODERATE":
+      return "bg-[var(--color-warning)]/10 text-[var(--color-warning)]";
+    case "WEAK":
+      return "bg-[var(--color-danger)]/10 text-[var(--color-danger)]";
+    default:
+      return "bg-fill text-muted";
+  }
+}
+
+function bandLabel(b: ReturnType<typeof scoreBand>) {
   switch (b) {
     case "STRONG":
       return "Strong";
@@ -112,17 +123,77 @@ function bandWord(b: ReturnType<typeof scoreBand>) {
   }
 }
 
-function bandFgFor(b: ReturnType<typeof scoreBand>) {
-  // Muted, paper-friendly band colours
-  switch (b) {
-    case "STRONG":
-      return "#2D6A3E"; // ivy
-    case "MODERATE":
-      return "#9C6B1D"; // ochre
-    case "WEAK":
-      return "#9C2A1D"; // brick
+function ScoreGauge({
+  score,
+  size = 160,
+}: {
+  score: number | null;
+  size?: number;
+}) {
+  const band = scoreBand(score);
+  const stroke = score ?? 0;
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  return (
+    <div
+      className="relative shrink-0"
+      style={{ width: size, height: size }}
+      aria-label={`Score ${score ?? "unavailable"} of 100`}
+    >
+      <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          stroke="var(--color-line)"
+          strokeWidth="9"
+          fill="none"
+        />
+        {score != null && (
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            className={
+              band === "STRONG"
+                ? "stroke-[var(--color-success)]"
+                : band === "MODERATE"
+                  ? "stroke-[var(--color-warning)]"
+                  : "stroke-[var(--color-danger)]"
+            }
+            strokeWidth="9"
+            fill="none"
+            strokeLinecap="round"
+            strokeDasharray={`${(stroke / 100) * circumference} ${circumference}`}
+          />
+        )}
+      </svg>
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={cn("text-5xl font-bold", bandColor(band))}>
+          {score ?? "—"}
+        </span>
+        <span className="text-[10px] text-muted uppercase tracking-wider mt-1">
+          Score / 100
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function prettyType(t: string) {
+  switch (t) {
+    case "terraced":
+      return "Terraced";
+    case "semi":
+      return "Semi-detached";
+    case "detached":
+      return "Detached";
+    case "flat":
+      return "Flat / apartment";
+    case "bungalow":
+      return "Bungalow";
     default:
-      return "#6B6256"; // warm grey
+      return "Other";
   }
 }
 
@@ -138,6 +209,7 @@ export default async function DealPage({
     .select("*")
     .eq("id", id)
     .single<DealRow>();
+
   if (!deal) notFound();
 
   const fin = computeFinancials({
@@ -149,458 +221,522 @@ export default async function DealPage({
   });
 
   const annualRent = deal.monthly_rent * 12;
-  const annualOp = fin.annualOperatingCosts;
+  const annualOpCosts = fin.annualOperatingCosts;
   const lettingFees = Math.round(annualRent * 0.1);
   const insurance = 30_000;
   const maintenance = Math.round(deal.price * 0.01);
   const voidAllowance = deal.monthly_rent;
   const annualMortgage = fin.monthlyMortgagePayment * 12;
   const annualCashflow = fin.monthlyCashflow * 12;
+
   const loanPence = Math.round(deal.price * (1 - deal.deposit_percent / 100));
   const depositPence = deal.price - loanPence;
 
   const ANNUAL_GROWTH = 0.03;
   const projection = [1, 3, 5].map((year) => {
     const value = Math.round(deal.price * Math.pow(1 + ANNUAL_GROWTH, year));
+    const equityFromGrowth = value - deal.price;
+    const equityIncOriginal = value - loanPence;
+    const cumulativeCashflow = annualCashflow * year;
+    const totalReturn =
+      cumulativeCashflow + equityFromGrowth - depositPence + depositPence;
     return {
       year,
       value,
-      equityIncOriginal: value - loanPence,
-      cumulativeCashflow: annualCashflow * year,
+      equityIncOriginal,
+      equityFromGrowth,
+      cumulativeCashflow,
+      totalReturn,
     };
   });
 
   const band = scoreBand(deal.composite_score);
-  const bandFg = bandFgFor(band);
 
-  const factors = (
-    [
-      "yield_score",
-      "refinance_score",
-      "licensing_risk_score",
-      "area_growth_score",
-      "demand_score",
-      "bmv_score",
-      "tenant_profile_score",
-    ] as const
-  ).map((k) => ({
-    key: k,
-    label: FACTOR_LABELS[k],
-    score: deal[k] as number | null,
-  }));
+  const factors: { key: keyof DealRow; label: string; score: number | null }[] =
+    (
+      [
+        "yield_score",
+        "refinance_score",
+        "licensing_risk_score",
+        "area_growth_score",
+        "demand_score",
+        "bmv_score",
+        "tenant_profile_score",
+      ] as const
+    ).map((k) => ({
+      key: k,
+      label: FACTOR_LABELS[k],
+      score: deal[k] as number | null,
+    }));
+
   const scoredFactors = factors.filter((f) => f.score != null).length;
 
-  const issuedAt = new Date(deal.created_at).toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-
   return (
-    <div className="editorial min-h-screen">
-      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-10">
-        {/* Masthead */}
-        <div className="flex items-center justify-between text-[10px] tracking-[0.18em] uppercase text-[#0F1419]">
-          <Link
-            href="/dashboard"
-            className="hover:underline underline-offset-4"
-          >
-            ← Capora dashboard
-          </Link>
-          <span style={{ color: INK }}>
-            Deal report &nbsp;·&nbsp; {deal.postcode} &nbsp;·&nbsp; {issuedAt}
-          </span>
-        </div>
-        <div className="mt-3 rule" />
+    <div className="max-w-5xl mx-auto px-4 py-6 md:py-10 space-y-6">
+      <Link
+        href="/dashboard"
+        className="inline-flex items-center gap-1.5 text-sm text-muted hover:text-ink"
+      >
+        <ArrowLeft className="h-4 w-4" />
+        Back to dashboard
+      </Link>
 
-        {/* Hero */}
-        <header className="pt-10 pb-12 grid grid-cols-12 gap-6 items-start">
-          <div className="col-span-12 md:col-span-8">
-            <p className="eyebrow">{deal.postcode}</p>
-            <h1
-              className="display mt-3 leading-[1.05]"
-              style={{
-                fontSize: "clamp(2rem, 5vw, 3.5rem)",
-                color: INK,
-              }}
-            >
+      <div className="rounded-xl border border-line bg-white shadow-sm overflow-hidden">
+        <div
+          className="h-1.5 w-full"
+          style={{ background: "var(--color-primary)" }}
+          aria-hidden
+        />
+        <div className="p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="min-w-0">
+            <p className="text-sm text-muted">{deal.postcode}</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-ink mt-1 break-words">
               {deal.address}
             </h1>
-            <p
-              className="mt-5 text-sm tnum"
-              style={{ color: INK }}
-            >
-              {deal.bedrooms} bed &nbsp;·&nbsp;{" "}
-              {prettyType(deal.property_type)} &nbsp;·&nbsp;{" "}
-              <strong>{fmtGBP(deal.price)}</strong>
-              &nbsp;·&nbsp; {fmtGBP(deal.monthly_rent)} pcm
+            <p className="text-sm text-muted mt-2">
+              {deal.bedrooms} bed · {prettyType(deal.property_type)} ·{" "}
+              {formatGBP(deal.price)} ·{" "}
+              {formatGBP(deal.monthly_rent)} pcm
             </p>
             {deal.source_url && (
               <a
                 href={deal.source_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-3 inline-block text-[11px] tracking-[0.12em] uppercase hover:underline underline-offset-4"
-                style={{ color: ACCENT }}
+                className="inline-flex items-center gap-1 text-xs text-[var(--color-primary)] hover:underline mt-2"
               >
-                View original listing →
+                <ExternalLink className="h-3 w-3" />
+                View original listing
               </a>
             )}
           </div>
-          <div className="col-span-12 md:col-span-4 md:pl-6 md:border-l md:border-[#0F1419]">
-            <p className="eyebrow">Capora score</p>
-            <div
-              className="display tnum mt-2 leading-none"
-              style={{
-                fontSize: "clamp(4rem, 8vw, 6rem)",
-                color: bandFg,
-              }}
-            >
-              {deal.composite_score ?? "—"}
+          <div className="flex items-center gap-5">
+            <ScoreGauge score={deal.composite_score} />
+            <div>
+              <span
+                className={cn(
+                  "text-xs font-medium px-2.5 py-1 rounded-full",
+                  bandPillClass(band),
+                )}
+              >
+                {bandLabel(band)}
+              </span>
+              <p className="text-xs text-muted mt-2 max-w-[14ch]">
+                {scoredFactors} of 7 factors scored
+              </p>
             </div>
-            <p
-              className="mt-3 text-xs tracking-[0.12em] uppercase"
-              style={{ color: bandFg }}
-            >
-              {bandWord(band)}
-            </p>
-            <p className="mt-1 text-[11px] text-[#6B6256]">
-              {scoredFactors} of 7 factors scored
-            </p>
           </div>
-        </header>
+        </div>
+      </div>
 
-        {/* Headline metrics */}
-        <Section title="At a glance">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-7">
-            <Lockup
-              eyebrow="Monthly cashflow"
-              value={fmtGBP(fin.monthlyCashflow, { signed: true })}
-              tone={fin.monthlyCashflow >= 0 ? "good" : "bad"}
-            />
-            <Lockup
-              eyebrow="Cash ROI · yr 1"
-              value={fmtPct(fin.cashRoiBps)}
-            />
-            <Lockup
-              eyebrow="Gross yield"
-              value={fmtPct(fin.grossYieldBps)}
-            />
-            <Lockup
-              eyebrow="Net yield"
-              value={fmtPct(fin.netYieldBps)}
-            />
-          </div>
-        </Section>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Headline
+          icon={PoundSterling}
+          label="Monthly cashflow"
+          value={formatGBP(fin.monthlyCashflow, { signed: true })}
+          tone={fin.monthlyCashflow >= 0 ? "success" : "danger"}
+        />
+        <Headline
+          icon={TrendingUp}
+          label="Cash ROI (yr 1)"
+          value={formatPercent(fin.cashRoiBps)}
+          tone={fin.cashRoiBps >= 800 ? "success" : "neutral"}
+        />
+        <Headline
+          icon={Building2}
+          label="Gross yield"
+          value={formatPercent(fin.grossYieldBps)}
+          tone={fin.grossYieldBps >= 700 ? "success" : "neutral"}
+        />
+        <Headline
+          icon={Sparkles}
+          label="Net yield"
+          value={formatPercent(fin.netYieldBps)}
+          tone={fin.netYieldBps >= 500 ? "success" : "neutral"}
+        />
+      </div>
 
-        {/* Property & mortgage */}
-        <Section title="Property & mortgage assumptions">
-          <dl className="grid grid-cols-2 md:grid-cols-3 gap-y-5 gap-x-8 text-sm">
-            <KV label="Asking price" value={fmtGBP(deal.price)} />
-            <KV label="Monthly rent" value={fmtGBP(deal.monthly_rent)} />
-            <KV label="Bedrooms" value={String(deal.bedrooms)} />
-            <KV
-              label="Property type"
-              value={prettyType(deal.property_type)}
-            />
-            <KV label="Postcode" value={deal.postcode} />
-            <KV label="Analysed" value={issuedAt} />
-            <KV
-              label="Deposit"
-              value={`${deal.deposit_percent}% · ${fmtGBP(depositPence)}`}
-            />
-            <KV
-              label="Mortgage"
-              value={`${deal.mortgage_rate}% interest-only`}
-            />
-            <KV label="Term" value={`${deal.mortgage_term_years} years`} />
-          </dl>
-        </Section>
+      <Section title="Property & mortgage assumptions">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+          <KV label="Asking price" value={formatGBP(deal.price)} />
+          <KV
+            label="Monthly rent (pcm)"
+            value={formatGBP(deal.monthly_rent)}
+          />
+          <KV label="Bedrooms" value={String(deal.bedrooms)} />
+          <KV label="Property type" value={prettyType(deal.property_type)} />
+          <KV label="Postcode" value={deal.postcode} />
+          <KV
+            label="Analysed"
+            value={new Date(deal.created_at).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          />
+          <KV
+            label="Deposit"
+            value={`${deal.deposit_percent}% (${formatGBP(depositPence)})`}
+          />
+          <KV
+            label="Mortgage"
+            value={`${deal.mortgage_rate}% interest-only`}
+          />
+          <KV label="Term" value={`${deal.mortgage_term_years} years`} />
+        </div>
+      </Section>
 
-        {/* Cashflow */}
-        <Section title="Annual cashflow">
-          <Table>
-            <Row label="Rental income" sub={`${fmtGBP(deal.monthly_rent)} × 12`} value={fmtGBP(annualRent, { signed: true })} positive />
-            <RowGroup label="Operating costs">
-              <Row label="Letting agent (10% of rent)" value={fmtGBP(-lettingFees, { signed: true })} sub="" />
-              <Row label="Insurance" value={fmtGBP(-insurance, { signed: true })} />
-              <Row label="Maintenance reserve (1% of price)" value={fmtGBP(-maintenance, { signed: true })} />
-              <Row label="Void allowance (1 month)" value={fmtGBP(-voidAllowance, { signed: true })} />
-              <Row label="Subtotal" value={fmtGBP(-annualOp, { signed: true })} bold />
-            </RowGroup>
+      <Section title="Annual cashflow breakdown">
+        <div className="space-y-2">
+          <Row
+            label="Rental income"
+            sub={`${formatGBP(deal.monthly_rent)}/mo × 12`}
+            value={formatGBP(annualRent, { signed: true })}
+            tone="positive"
+          />
+          <Group label="Operating costs">
+            <SubRow
+              label="Letting agent (10% of rent)"
+              value={formatGBP(-lettingFees, { signed: true })}
+            />
+            <SubRow
+              label="Insurance"
+              value={formatGBP(-insurance, { signed: true })}
+            />
+            <SubRow
+              label="Maintenance reserve (1% of price)"
+              value={formatGBP(-maintenance, { signed: true })}
+            />
+            <SubRow
+              label="Void allowance (1 month)"
+              value={formatGBP(-voidAllowance, { signed: true })}
+            />
+            <SubRow
+              label="Total"
+              value={formatGBP(-annualOpCosts, { signed: true })}
+              bold
+            />
+          </Group>
+          <Row
+            label="Mortgage interest"
+            sub={`${formatGBP(loanPence)} loan × ${deal.mortgage_rate}%`}
+            value={formatGBP(-annualMortgage, { signed: true })}
+            tone="negative"
+          />
+          <div className="border-t border-line pt-3 mt-2">
             <Row
-              label="Mortgage interest"
-              sub={`${fmtGBP(loanPence)} loan × ${deal.mortgage_rate}%`}
-              value={fmtGBP(-annualMortgage, { signed: true })}
-              negative
-            />
-            <RowTotal
               label="Net annual cashflow"
-              value={fmtGBP(annualCashflow, { signed: true })}
-              positive={annualCashflow >= 0}
-              caption={`≈ ${fmtGBP(fin.monthlyCashflow, { signed: true })} per month.`}
+              value={formatGBP(annualCashflow, { signed: true })}
+              tone={annualCashflow >= 0 ? "positive" : "negative"}
+              bold
             />
-          </Table>
-        </Section>
-
-        {/* Acquisition */}
-        <Section title="Cash needed to acquire">
-          <Table>
-            <Row
-              label={`Deposit (${deal.deposit_percent}%)`}
-              value={fmtGBP(depositPence)}
-            />
-            <Row
-              label="Stamp Duty Land Tax"
-              sub="Includes 3% additional-property surcharge"
-              value={fmtGBP(fin.stampDuty)}
-            />
-            <Row label="Survey (estimate)" value={fmtGBP(DEFAULT_SURVEY_COST)} />
-            <Row label="Legal fees (estimate)" value={fmtGBP(DEFAULT_LEGAL_COST)} />
-            <RowTotal
-              label="Total cash required"
-              value={fmtGBP(fin.totalAcquisitionCost)}
-              caption={`Year-1 cash ROI = ${fmtPct(fin.cashRoiBps)} of cash deployed.`}
-            />
-          </Table>
-        </Section>
-
-        {/* Projection */}
-        <Section
-          title="5-year projection"
-          eyebrow="Assumes 3%/yr capital growth and constant operating costs. Illustrative."
-        >
-          <div className="overflow-x-auto -mx-5 sm:mx-0">
-            <table className="w-full text-sm min-w-[520px] tnum">
-              <thead>
-                <tr className="text-[10px] tracking-[0.12em] uppercase">
-                  <th className="text-left font-semibold py-3 pl-5 sm:pl-0" style={{ color: INK }}>Year</th>
-                  <th className="text-right font-semibold py-3" style={{ color: INK }}>Projected value</th>
-                  <th className="text-right font-semibold py-3" style={{ color: INK }}>Equity (incl. growth)</th>
-                  <th className="text-right font-semibold py-3 pr-5 sm:pr-0" style={{ color: INK }}>Cumulative cashflow</th>
-                </tr>
-              </thead>
-              <tbody>
-                {projection.map((p, i) => (
-                  <tr key={p.year} className={cn("border-t", i === 0 ? "border-[#0F1419]" : "border-[#E2DBCC]")}>
-                    <td className="py-4 pl-5 sm:pl-0" style={{ color: INK }}>
-                      Year {p.year}
-                    </td>
-                    <td className="py-4 text-right" style={{ color: INK }}>
-                      {fmtGBP(p.value)}
-                    </td>
-                    <td className="py-4 text-right" style={{ color: INK }}>
-                      {fmtGBP(p.equityIncOriginal)}
-                    </td>
-                    <td
-                      className="py-4 text-right pr-5 sm:pr-0 font-semibold"
-                      style={{
-                        color:
-                          p.cumulativeCashflow >= 0 ? "#2D6A3E" : "#9C2A1D",
-                      }}
-                    >
-                      {fmtGBP(p.cumulativeCashflow, { signed: true })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <p className="text-[11px] text-muted mt-1">
+              ≈ {formatGBP(fin.monthlyCashflow, { signed: true })} per month.
+            </p>
           </div>
-        </Section>
+        </div>
+      </Section>
 
-        {/* Factors */}
-        <Section title={`Investment factors · ${scoredFactors} of 7 scored`}>
-          <div className="grid md:grid-cols-2 gap-x-10 gap-y-5">
-            {factors.map((f) => {
-              const fb = scoreBand(f.score);
-              const fg = bandFgFor(fb);
-              return (
-                <div
-                  key={f.key as string}
-                  className="grid grid-cols-[1fr_auto] items-baseline gap-x-4"
-                >
-                  <span className="text-sm" style={{ color: INK }}>
-                    {f.label}
-                  </span>
-                  {f.score != null ? (
-                    <span className="display tnum text-2xl" style={{ color: fg }}>
-                      {f.score}
+      <Section title="Cash needed to acquire">
+        <div className="space-y-2">
+          <Row
+            label={`Deposit (${deal.deposit_percent}%)`}
+            value={formatGBP(depositPence)}
+          />
+          <Row
+            label="Stamp Duty Land Tax"
+            sub="Includes 3% additional-property surcharge"
+            value={formatGBP(fin.stampDuty)}
+          />
+          <Row
+            label="Survey (estimate)"
+            value={formatGBP(DEFAULT_SURVEY_COST)}
+          />
+          <Row
+            label="Legal fees (estimate)"
+            value={formatGBP(DEFAULT_LEGAL_COST)}
+          />
+          <div className="border-t border-line pt-3 mt-2">
+            <Row
+              label="Total cash required"
+              value={formatGBP(fin.totalAcquisitionCost)}
+              bold
+            />
+            <p className="text-[11px] text-muted mt-1">
+              Year-1 cash ROI = annual cashflow ÷ total cash required ={" "}
+              {formatPercent(fin.cashRoiBps)}.
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      <Section
+        title="5-year projection"
+        hint="Assumes 3%/yr capital growth and constant operating costs. Illustrative."
+      >
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full text-sm min-w-[480px] sm:min-w-0">
+            <thead className="text-[11px] uppercase tracking-wider text-muted">
+              <tr>
+                <th className="text-left font-medium px-4 sm:px-0 py-2">Year</th>
+                <th className="text-right font-medium py-2">
+                  Projected value
+                </th>
+                <th className="text-right font-medium py-2">
+                  Equity (incl. growth)
+                </th>
+                <th className="text-right font-medium py-2 pr-4 sm:pr-0">
+                  Cumulative cashflow
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {projection.map((p) => (
+                <tr key={p.year} className="border-t border-line">
+                  <td className="py-3 px-4 sm:px-0 text-ink font-medium">
+                    <span className="inline-flex items-center gap-2">
+                      <Calendar className="h-3.5 w-3.5 text-faint" />
+                      Year {p.year}
                     </span>
+                  </td>
+                  <td className="py-3 text-right text-ink">
+                    {formatGBP(p.value)}
+                  </td>
+                  <td className="py-3 text-right text-ink">
+                    {formatGBP(p.equityIncOriginal)}
+                  </td>
+                  <td
+                    className={cn(
+                      "py-3 text-right pr-4 sm:pr-0 font-medium",
+                      p.cumulativeCashflow >= 0
+                        ? "text-[var(--color-success)]"
+                        : "text-[var(--color-danger)]",
+                    )}
+                  >
+                    {formatGBP(p.cumulativeCashflow, { signed: true })}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Section>
+
+      <Section
+        title="Investment factors"
+        hint="Tap any row for the inputs we used (V1.2)."
+      >
+        <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
+          {factors.map((f) => {
+            const fb = scoreBand(f.score);
+            return (
+              <div key={f.key as string}>
+                <div className="flex justify-between items-center text-sm mb-1">
+                  <span className="text-body">{f.label}</span>
+                  {f.score != null ? (
+                    <span className="text-ink font-medium">{f.score}</span>
                   ) : (
-                    <span className="text-[10px] tracking-[0.12em] uppercase" style={{ color: "#6B6256" }}>
+                    <span className="inline-flex items-center gap-1 text-[10px] text-faint uppercase tracking-wider">
+                      <Lock className="h-3 w-3" />
                       Insufficient data
                     </span>
                   )}
-                  <div className="col-span-2 h-px mt-2" style={{ background: "#E2DBCC" }}>
-                    {f.score != null && (
-                      <div
-                        className="h-px"
-                        style={{ width: `${f.score}%`, background: fg }}
-                      />
-                    )}
-                  </div>
                 </div>
-              );
-            })}
-          </div>
-          {scoredFactors < 7 && (
-            <p
-              className="mt-8 text-[11px] tracking-[0.12em] uppercase"
-              style={{ color: ACCENT }}
-            >
-              Area growth, demand, BMV and tenant stability ship with Phase 3
-              (Land Registry &amp; ONS Census).
-            </p>
-          )}
-        </Section>
-
-        {/* AI report */}
-        <Section title="Analyst's note">
-          {deal.ai_report_summary ? (
-            <>
-              <p
-                className="display text-lg md:text-xl leading-[1.55] max-w-2xl"
-                style={{ color: INK }}
-              >
-                &ldquo;{deal.ai_report_summary}&rdquo;
-              </p>
-              <div className="grid md:grid-cols-2 gap-x-10 gap-y-6 mt-10">
-                <div>
-                  <p className="eyebrow">Strengths</p>
-                  <ul className="mt-3 space-y-2 text-sm" style={{ color: INK }}>
-                    {(deal.ai_report_strengths ?? []).map((s, i) => (
-                      <li key={i} className="grid grid-cols-[auto_1fr] gap-x-3">
-                        <span style={{ color: "#2D6A3E" }}>+</span>
-                        <span>{s}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="eyebrow">Concerns</p>
-                  <ul className="mt-3 space-y-2 text-sm" style={{ color: INK }}>
-                    {(deal.ai_report_risks ?? []).map((r, i) => (
-                      <li key={i} className="grid grid-cols-[auto_1fr] gap-x-3">
-                        <span style={{ color: "#9C6B1D" }}>!</span>
-                        <span>{r}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="h-1.5 rounded-full bg-fill overflow-hidden">
+                  {f.score != null ? (
+                    <div
+                      className={`h-full rounded-full ${bandClass(fb)}`}
+                      style={{ width: `${f.score}%` }}
+                    />
+                  ) : (
+                    <div
+                      className="h-full rounded-full"
+                      style={{
+                        width: "100%",
+                        backgroundImage:
+                          "repeating-linear-gradient(45deg, var(--color-line), var(--color-line) 4px, transparent 4px, transparent 8px)",
+                      }}
+                    />
+                  )}
                 </div>
               </div>
-            </>
-          ) : (
-            <p className="text-sm italic" style={{ color: "#6B6256" }}>
-              AI report unavailable for this deal — refer to the figures and
-              factor scores above.
+            );
+          })}
+        </div>
+        {scoredFactors < 7 && (
+          <div className="mt-5 rounded-md bg-[var(--color-primary-light)]/50 border border-[var(--color-primary)]/20 px-4 py-3 text-sm">
+            <p className="text-ink font-medium flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-[var(--color-primary)]" />
+              {7 - scoredFactors} more factor
+              {7 - scoredFactors === 1 ? "" : "s"} coming soon
             </p>
-          )}
-        </Section>
+            <p className="text-muted mt-1">
+              Area growth, demand, BMV and tenant stability ship once Land
+              Registry and ONS Census data are wired in.
+            </p>
+          </div>
+        )}
+      </Section>
 
-        {/* Actions */}
-        <div className="mt-12 rule" />
-        <div className="mt-6 flex flex-wrap items-center gap-6 text-xs tracking-[0.12em] uppercase">
-          <a
-            href={`/api/report/${deal.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:underline underline-offset-4"
-            style={{ color: ACCENT, fontWeight: 600 }}
-          >
-            Export PDF
-          </a>
-          <span style={{ color: "#6B6256" }}>Share link — coming soon</span>
-          <Link
-            href="/analyse"
-            className="ml-auto hover:underline underline-offset-4"
-            style={{ color: INK }}
-          >
-            Analyse another →
-          </Link>
+      <div className="rounded-xl border border-line bg-card p-6 md:p-8">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+          <p className="text-xs uppercase tracking-wider text-muted">
+            AI deal report
+          </p>
+          {deal.ai_report_score_band && (
+            <span
+              className={cn(
+                "text-xs font-medium px-2 py-0.5 rounded-full",
+                bandPillClass(
+                  deal.ai_report_score_band as
+                    | "STRONG"
+                    | "MODERATE"
+                    | "WEAK",
+                ),
+              )}
+            >
+              Score band: {bandLabel(
+                deal.ai_report_score_band as
+                  | "STRONG"
+                  | "MODERATE"
+                  | "WEAK",
+              )}
+            </span>
+          )}
         </div>
 
-        <p
-          className="mt-12 text-[11px] italic leading-relaxed max-w-2xl"
-          style={{ color: "#6B6256" }}
-        >
-          This report is not financial advice. Figures are computed from the
-          inputs you supplied and the published Capora methodology. You
-          acknowledge under our{" "}
-          <Link href="/terms" className="underline">terms</Link> that you will
-          perform your own due diligence — including a RICS survey, solicitor,
-          and qualified mortgage broker — before acting on this report.
-        </p>
+        {deal.ai_report_summary ? (
+          <>
+            <p className="text-sm text-body leading-relaxed">
+              {deal.ai_report_summary}
+            </p>
+            <div className="grid md:grid-cols-2 gap-6 mt-6">
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-muted mb-2">
+                  Strengths
+                </p>
+                {deal.ai_report_strengths?.length ? (
+                  <ul className="text-sm text-body space-y-1.5">
+                    {deal.ai_report_strengths.map((s, i) => (
+                      <li key={i} className="flex gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-[var(--color-success)] mt-0.5 shrink-0" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted italic">None flagged.</p>
+                )}
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-wider text-muted mb-2">
+                  Concerns
+                </p>
+                {deal.ai_report_risks?.length ? (
+                  <ul className="text-sm text-body space-y-1.5">
+                    {deal.ai_report_risks.map((r, i) => (
+                      <li key={i} className="flex gap-2">
+                        <ShieldAlert className="h-4 w-4 text-[var(--color-warning)] mt-0.5 shrink-0" />
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-sm text-muted italic">None flagged.</p>
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-muted italic">
+            AI report unavailable for this deal — refer to the figures and
+            factor scores above.
+          </p>
+        )}
 
-        <p
-          className="mt-6 text-[10px] tracking-[0.18em] uppercase"
-          style={{ color: "#6B6256" }}
-        >
-          Capora · Deal report · {issuedAt}
+        <p className="text-xs italic text-faint mt-6">
+          Not financial advice. Do your own due diligence. Always commission a
+          survey, valuation and legal review before any property transaction.
         </p>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <a
+          href={`/api/report/${deal.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Button>Export PDF</Button>
+        </a>
+        <Button variant="outline" disabled>
+          Share link (V1.05)
+        </Button>
+        <Link href="/analyse" className="ml-auto">
+          <Button variant="ghost">
+            Analyse another
+            <ArrowUpRight className="h-4 w-4" />
+          </Button>
+        </Link>
       </div>
     </div>
   );
 }
 
-/* ────────── primitives ────────── */
-
 function Section({
   title,
-  eyebrow,
+  hint,
   children,
 }: {
   title: string;
-  eyebrow?: string;
+  hint?: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-14">
-      <div className="flex items-baseline justify-between gap-4">
-        <h2
-          className="eyebrow"
-          style={{ fontSize: "12px", letterSpacing: "0.18em" }}
-        >
-          {title}
-        </h2>
-        {eyebrow && (
-          <p
-            className="text-[10px] tracking-[0.12em] uppercase max-w-md text-right"
-            style={{ color: "#6B6256" }}
-          >
-            {eyebrow}
-          </p>
-        )}
+    <section className="rounded-xl border border-line bg-white p-6 md:p-8">
+      <div className="mb-4">
+        <h2 className="text-base font-semibold text-ink">{title}</h2>
+        {hint && <p className="text-xs text-muted mt-1">{hint}</p>}
       </div>
-      <div className="mt-3 rule" />
-      <div className="mt-7">{children}</div>
+      {children}
     </section>
   );
 }
 
-function Lockup({
-  eyebrow,
+function Headline({
+  icon: Icon,
+  label,
   value,
-  tone,
+  tone = "neutral",
 }: {
-  eyebrow: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
   value: string;
-  tone?: "good" | "bad";
+  tone?: "success" | "danger" | "neutral";
 }) {
-  const colour =
-    tone === "good"
-      ? "#2D6A3E"
-      : tone === "bad"
-        ? "#9C2A1D"
-        : "var(--color-ink-deep)";
+  const valueClass =
+    tone === "success"
+      ? "text-[var(--color-success)]"
+      : tone === "danger"
+        ? "text-[var(--color-danger)]"
+        : "text-ink";
+  const borderClass =
+    tone === "success"
+      ? "border-l-[var(--color-success)]"
+      : tone === "danger"
+        ? "border-l-[var(--color-danger)]"
+        : "border-l-line";
   return (
-    <div>
-      <p className="eyebrow">{eyebrow}</p>
-      <p
-        className="display tnum mt-2 leading-none"
-        style={{ fontSize: "clamp(1.6rem, 3vw, 2.25rem)", color: colour }}
-      >
-        {value}
-      </p>
+    <div
+      className={cn(
+        "rounded-xl border border-line bg-white px-4 py-3 border-l-4",
+        borderClass,
+      )}
+    >
+      <div className="flex items-center justify-between text-muted">
+        <p className="text-[11px] uppercase tracking-wider">{label}</p>
+        <Icon className="h-3.5 w-3.5 text-faint" />
+      </div>
+      <p className={cn("text-2xl font-bold mt-1.5", valueClass)}>{value}</p>
     </div>
   );
 }
@@ -608,65 +744,54 @@ function Lockup({
 function KV({ label, value }: { label: string; value: string }) {
   return (
     <div>
-      <dt
-        className="text-[10px] tracking-[0.12em] uppercase"
-        style={{ color: "#6B6256" }}
-      >
+      <p className="text-[11px] uppercase tracking-wider text-muted">
         {label}
-      </dt>
-      <dd className="mt-1 tnum" style={{ color: INK }}>
-        {value}
-      </dd>
+      </p>
+      <p className="text-ink font-medium mt-0.5">{value}</p>
     </div>
   );
-}
-
-function Table({ children }: { children: React.ReactNode }) {
-  return <div className="divide-y divide-[#E2DBCC]">{children}</div>;
 }
 
 function Row({
   label,
   sub,
   value,
-  bold,
-  positive,
-  negative,
+  tone = "neutral",
+  bold = false,
 }: {
   label: string;
   sub?: string;
   value: string;
+  tone?: "positive" | "negative" | "neutral";
   bold?: boolean;
-  positive?: boolean;
-  negative?: boolean;
 }) {
-  const colour = positive ? "#2D6A3E" : negative ? "#9C2A1D" : INK;
+  const valueClass =
+    tone === "positive"
+      ? "text-[var(--color-success)]"
+      : tone === "negative"
+        ? "text-[var(--color-danger)]"
+        : "text-ink";
   return (
-    <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-6 py-3">
-      <div>
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0">
         <p
-          className={cn("text-sm", bold && "font-semibold")}
-          style={{ color: INK }}
+          className={cn(
+            "text-sm",
+            bold ? "font-semibold text-ink" : "text-body",
+          )}
         >
           {label}
         </p>
-        {sub && (
-          <p className="text-[11px] mt-0.5" style={{ color: "#6B6256" }}>
-            {sub}
-          </p>
-        )}
+        {sub && <p className="text-[11px] text-muted">{sub}</p>}
       </div>
-      <p
-        className={cn("tnum text-sm tabular-nums", bold && "font-semibold")}
-        style={{ color: colour }}
-      >
+      <p className={cn("text-sm tabular-nums", bold && "font-bold", valueClass)}>
         {value}
       </p>
     </div>
   );
 }
 
-function RowGroup({
+function Group({
   label,
   children,
 }: {
@@ -674,46 +799,42 @@ function RowGroup({
   children: React.ReactNode;
 }) {
   return (
-    <div className="py-1">
-      <p
-        className="text-[10px] tracking-[0.12em] uppercase mt-2"
-        style={{ color: "#6B6256" }}
-      >
-        {label}
-      </p>
-      <div className="mt-1 pl-4 border-l border-[#E2DBCC]">{children}</div>
+    <div className="rounded-md border border-line bg-card px-4 py-3">
+      <p className="text-sm text-body mb-2">{label}</p>
+      <div className="space-y-1.5">{children}</div>
     </div>
   );
 }
 
-function RowTotal({
+function SubRow({
   label,
   value,
-  caption,
-  positive,
+  bold = false,
 }: {
   label: string;
   value: string;
-  caption?: string;
-  positive?: boolean;
+  bold?: boolean;
 }) {
   return (
-    <div className="grid grid-cols-[1fr_auto] items-baseline gap-x-6 pt-5 mt-2 border-t border-[#0F1419]">
-      <div>
-        <p className="display text-base" style={{ color: INK }}>
-          {label}
-        </p>
-        {caption && (
-          <p className="text-[11px] mt-1.5" style={{ color: "#6B6256" }}>
-            {caption}
-          </p>
-        )}
-      </div>
+    <div
+      className={cn(
+        "flex items-center justify-between gap-4",
+        bold && "border-t border-line pt-1.5 mt-1",
+      )}
+    >
       <p
-        className="display tnum text-xl"
-        style={{
-          color: positive === false ? "#9C2A1D" : INK,
-        }}
+        className={cn(
+          "text-xs",
+          bold ? "font-semibold text-ink" : "text-muted",
+        )}
+      >
+        {label}
+      </p>
+      <p
+        className={cn(
+          "text-xs tabular-nums",
+          bold ? "font-bold text-ink" : "text-body",
+        )}
       >
         {value}
       </p>
