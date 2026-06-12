@@ -728,12 +728,9 @@ function Footer() {
         </div>
 
         <div className="mt-10 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <p className="text-sm text-muted">
-            © 2026 Daramola Consulting · Built in Manchester
-          </p>
+          <p className="text-sm text-muted">© 2026 Capora · Built in Manchester</p>
           <p className="text-xs text-muted">
-            Capora is a trading name of Daramola Consulting Ltd, registered in
-            England &amp; Wales.
+            UK BTL deal analyser · early access
           </p>
         </div>
 

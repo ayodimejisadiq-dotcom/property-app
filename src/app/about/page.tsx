@@ -66,8 +66,7 @@ export default function AboutPage() {
 
         <h2 className="mt-10 text-xl font-bold text-ink">Who&apos;s behind it</h2>
         <p className="mt-3 text-body leading-relaxed">
-          Capora is built in Manchester by Daramola Consulting Ltd, a UK
-          registered company. We&apos;re a small team that ships fast and
+          Capora is built in Manchester by a small team that ships fast and
           listens to the investors who use the product. Got a factor you wish
           we scored? Email{" "}
           <a
