@@ -151,6 +151,14 @@ export default async function AdminPage() {
           A snapshot of who&apos;s signing up, what they&apos;re analysing, and
           who&apos;s active.
         </p>
+        <div className="mt-4">
+          <Link
+            href="/admin/users"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] hover:underline"
+          >
+            Manage users →
+          </Link>
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3 mb-8">
