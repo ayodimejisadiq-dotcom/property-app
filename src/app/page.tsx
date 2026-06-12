@@ -76,18 +76,20 @@ function Hero() {
         <div>
           <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full bg-white shadow-sm border border-line text-[var(--color-primary)]">
             <Sparkles className="h-3 w-3" />
-            UK BTL deal analyser · early access
+            Know if a property is worth it · early access
           </span>
           <h1 className="mt-4 text-[2.5rem] sm:text-5xl md:text-6xl font-bold text-ink tracking-tight leading-[1.05]">
-            Score property deals{" "}
+            Is this property{" "}
             <span style={{ color: "var(--color-primary)" }}>
-              in seconds.
+              a good buy?
             </span>
           </h1>
           <p className="mt-5 text-lg text-body leading-relaxed max-w-lg">
-            A second opinion on every UK BTL deal. Paste a Rightmove link, get
-            a 0–100 score across the seven factors that actually matter — plus
-            a plain-English report you can take to your broker.
+            Paste a Rightmove or Zoopla link — or just type the details — and
+            we&apos;ll score the property out of 100 across the seven things
+            that actually matter. Plain English. No spreadsheets. For first-time
+            buyers, landlords, and anyone who&apos;s ever stared at a listing
+            wondering &quot;is this the one?&quot;
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link href="/signup">
@@ -103,7 +105,7 @@ function Hero() {
             </Link>
           </div>
           <p className="mt-4 text-sm text-muted">
-            5 deal reports a month, free. No card required.
+            5 free reports a month. No card. Takes under a minute.
           </p>
         </div>
         <HeroPreview />
@@ -188,11 +190,11 @@ function ProblemStrip() {
     <section className="border-b border-line bg-card">
       <div className="max-w-4xl mx-auto px-5 sm:px-6 py-10 text-center">
         <p className="text-lg md:text-xl text-ink leading-relaxed">
-          Most BTL investors decide on gut feel, an asking price, and a
-          calculator from 2014.{" "}
+          Buying a home is the biggest decision most people ever make — and
+          most of us go in with gut feel and a calculator from 2014.{" "}
           <span className="text-muted">
-            Capora replaces all three with seven measurable factors and the
-            data to back them up.
+            Capora gives you a clear, honest read on any property in the UK,
+            backed by real data.
           </span>
         </p>
       </div>
@@ -204,20 +206,20 @@ function WhatYouGet() {
   const items = [
     {
       icon: Gauge,
-      title: "A 0–100 deal score",
-      body: "Weighted across yield, growth, demand, refinance potential, BMV, tenant stability, and licensing risk.",
+      title: "A score out of 100",
+      body: "One number that captures yield, area growth, demand, value, and risk — so you know at a glance whether to look closer or walk away.",
       tone: "primary" as const,
     },
     {
       icon: ScrollText,
-      title: "A plain-English report",
-      body: "Strengths and concerns written for humans, not spreadsheets. Take it to your broker or partner.",
+      title: "A report in plain English",
+      body: "Strengths, concerns, and what to ask the agent — written for humans, not spreadsheets. Share it with your partner, broker, or parents.",
       tone: "accent" as const,
     },
     {
       icon: Database,
-      title: "Real UK data",
-      body: "Land Registry, ONS Census, council licensing registers. Sources cited, never invented.",
+      title: "Backed by real UK data",
+      body: "Land Registry, ONS Census, council licensing registers. Every source cited. Nothing made up.",
       tone: "warning" as const,
     },
   ];
@@ -229,7 +231,7 @@ function WhatYouGet() {
             What you get
           </span>
           <h2 className="text-3xl md:text-4xl font-bold text-ink tracking-tight">
-            One score. Seven factors. No fluff.
+            One score. Plain English. No fluff.
           </h2>
         </div>
         <div className="mt-12 flex md:grid md:grid-cols-3 gap-6 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-3 md:overflow-visible md:mx-0 md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -275,38 +277,38 @@ function SevenFactors() {
   const factors = [
     {
       icon: LineChart,
-      name: "Yield",
-      blurb: "Gross + net yield against the UK BTL benchmark.",
+      name: "Rental yield",
+      blurb: "What it would earn as a rental, compared to the UK average.",
     },
     {
       icon: BarChart3,
       name: "Area growth",
-      blurb: "5-year price trend vs the national average (Land Registry).",
+      blurb: "How prices in this area have moved over the last 5 years.",
     },
     {
       icon: Users,
-      name: "Demand",
-      blurb: "Rent-to-price ratio vs the regional rental index.",
+      name: "Local demand",
+      blurb: "How easily homes here get rented or sold versus the rest of the country.",
     },
     {
       icon: KeyRound,
-      name: "Refinance potential",
-      blurb: "Equity unlocked at year 5 under current LTV rules.",
+      name: "Future equity",
+      blurb: "Roughly how much value you could unlock in 5 years if prices hold.",
     },
     {
       icon: Building2,
-      name: "Below market value",
-      blurb: "Asking price vs sold comps within 0.5 miles.",
+      name: "Value for money",
+      blurb: "Whether the asking price is fair compared to what just sold nearby.",
     },
     {
       icon: MapPin,
-      name: "Tenant stability",
-      blurb: "Local employment + household indicators (ONS Census).",
+      name: "Neighbourhood strength",
+      blurb: "Jobs, household stability, and other signals from ONS Census data.",
     },
     {
       icon: ShieldAlert,
-      name: "Licensing risk",
-      blurb: "Selective, additional or HMO schemes that affect this postcode.",
+      name: "Licensing & rules",
+      blurb: "Council schemes (selective, additional, HMO) that could affect renting it out.",
     },
   ];
   return (
@@ -314,17 +316,18 @@ function SevenFactors() {
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
-            The seven factors
+            The seven things we check
           </h2>
           <p className="mt-3 text-body">
-            Score band: <span className="text-[var(--color-success)] font-medium">Strong</span>{" "}
+            Each one gets a score:{" "}
+            <span className="text-[var(--color-success)] font-medium">Strong</span>{" "}
             ·{" "}
             <span className="text-[var(--color-warning)] font-medium">
               Moderate
             </span>{" "}
             ·{" "}
             <span className="text-[var(--color-danger)] font-medium">Weak</span>
-            . Each factor explains itself with the inputs and sources we used.
+            . Tap any factor to see exactly how we worked it out.
           </p>
         </div>
         <div className="mt-10 flex sm:grid sm:grid-cols-2 lg:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory -mx-5 px-5 pb-3 sm:overflow-visible sm:mx-0 sm:px-0 sm:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
@@ -358,17 +361,17 @@ function HowItWorks() {
     {
       n: "1",
       title: "Paste or type",
-      body: "Rightmove or Zoopla URL, or just type the property details.",
+      body: "Drop in a Rightmove or Zoopla link — or just type the address, price, and rooms.",
     },
     {
       n: "2",
-      title: "Run analysis",
-      body: "We fetch the data, score the seven factors, write the report.",
+      title: "We do the maths",
+      body: "We pull the data, score the seven factors, and write the report so you don't have to.",
     },
     {
       n: "3",
       title: "Read, save, share",
-      body: "Export the report as a PDF for your broker, partner, or accountant.",
+      body: "Download as a PDF to send to your partner, broker, parents, or anyone helping you decide.",
     },
   ];
   return (
@@ -426,8 +429,8 @@ function SampleDeal() {
             What a Capora report looks like
           </h2>
           <p className="mt-3 text-body">
-            A scored deal — straight to the point, sources cited, no
-            recommendations.
+            A real property, scored — straight to the point, every source
+            shown, no &quot;you should buy this&quot;.
           </p>
         </div>
 
@@ -553,20 +556,20 @@ function SampleDeal() {
 function HonestLimits() {
   const items = [
     {
-      title: "Not financial advice",
-      body: "We don't tell you what to buy. We surface the numbers so you can decide.",
+      title: "We're not financial advisers",
+      body: "We don't tell you what to buy. We show you the numbers so you can decide.",
     },
     {
-      title: "Not a survey",
-      body: "Always commission a structural survey and legal review before you exchange.",
+      title: "We're not a survey",
+      body: "Always get a proper structural survey and a solicitor before you exchange.",
     },
     {
-      title: "Not a mortgage broker",
-      body: "Talk to a qualified broker about lending — rates change weekly.",
+      title: "We're not a mortgage broker",
+      body: "Talk to a qualified broker for lending — rates change weekly.",
     },
     {
-      title: "Not perfect",
-      body: "Third-party data has gaps and lag. We cite our sources so you can verify anything.",
+      title: "We're not perfect",
+      body: "Public data has gaps and delays. We show our sources so you can double-check anything.",
     },
   ];
   return (
@@ -574,11 +577,11 @@ function HonestLimits() {
       <div className="max-w-6xl mx-auto px-5 sm:px-6 py-16">
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-ink">
-            Honest about the limits
+            What we&apos;re not
           </h2>
           <p className="mt-3 text-body">
-            We&apos;d rather under-promise than ship a tool that gets people
-            into bad deals.
+            We&apos;d rather under-promise than help anyone into a bad
+            decision.
           </p>
         </div>
         <div className="mt-10 grid md:grid-cols-2 gap-4">
@@ -607,8 +610,8 @@ function Pricing() {
           Free while we&apos;re in early access
         </h2>
         <p className="mt-3 text-body max-w-xl mx-auto">
-          5 full deal reports a month. No card required. Paid tiers — unlimited
-          deals, refurb scan, mortgage stress-testing — coming soon.
+          5 full reports a month. No card needed. Paid plans — unlimited
+          reports, refurb scan, mortgage stress-testing — coming soon.
         </p>
         <div className="mt-6">
           <Link href="/signup">
@@ -636,10 +639,10 @@ function FinalCTA() {
           <div className="relative">
             <FileText className="h-10 w-10 mx-auto mb-4 opacity-90" />
             <h2 className="text-[1.75rem] sm:text-3xl md:text-4xl font-bold tracking-tight leading-tight">
-              Run your next deal through Capora first.
+              Check your next property with Capora first.
             </h2>
             <p className="mt-4 text-white/80 max-w-md mx-auto">
-              Five reports a month, free. No card. Two minutes to set up.
+              Five free reports a month. No card. Two minutes to set up.
             </p>
             <div className="mt-8 flex justify-center gap-3 flex-wrap">
               <Link href="/signup">
@@ -702,8 +705,8 @@ function Footer() {
           <div>
             <Logo size="sm" />
             <p className="mt-4 text-sm text-muted leading-relaxed max-w-xs">
-              A second opinion on every UK BTL deal. Scored across seven
-              factors, sourced from real data.
+              A clear, honest read on any UK property. Scored across seven
+              factors, backed by real data.
             </p>
           </div>
           {columns.map((col) => (
@@ -730,7 +733,7 @@ function Footer() {
         <div className="mt-10 pt-6 border-t border-line flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <p className="text-sm text-muted">© 2026 Capora · Built in Manchester</p>
           <p className="text-xs text-muted">
-            UK BTL deal analyser · early access
+            UK property scoring · early access
           </p>
         </div>
 

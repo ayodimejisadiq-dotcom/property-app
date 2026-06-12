@@ -34,19 +34,21 @@ export default function AboutPage() {
           About Capora
         </h1>
         <p className="mt-4 text-lg text-body leading-relaxed">
-          Capora is a second opinion on every UK buy-to-let deal. Paste a
-          Rightmove or Zoopla link, get a 0–100 score across the seven factors
-          that actually matter, plus a plain-English report you can take to your
-          broker.
+          Capora gives you a clear, honest read on any UK property. Paste a
+          Rightmove or Zoopla link — or just type the details — and you get a
+          score out of 100 across the seven things that actually matter, plus
+          a plain-English report. Whether it&apos;s your first home or your
+          fifteenth rental, the goal is the same: help you decide with data,
+          not gut feel.
         </p>
 
         <h2 className="mt-12 text-xl font-bold text-ink">Why we built it</h2>
         <p className="mt-3 text-body leading-relaxed">
-          Most BTL investors decide on gut feel, an asking price, and a
-          calculator from 2014. Capora replaces all three with measurable
-          factors and the data to back them up — yield, area growth, demand,
-          refinance potential, below market value, tenant stability, and
-          licensing risk.
+          Buying a property is the biggest decision most of us ever make, and
+          most people go in with a calculator from 2014 and a hunch. Capora
+          replaces that with measurable factors and the public data to back
+          them up — rental yield, area growth, local demand, future equity,
+          value for money, neighbourhood strength, and licensing rules.
         </p>
 
         <h2 className="mt-10 text-xl font-bold text-ink">How we score</h2>
