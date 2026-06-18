@@ -7,6 +7,7 @@ import {
   Calendar,
   CheckCircle2,
   ExternalLink,
+  Info,
   Lock,
   PoundSterling,
   ShieldAlert,
@@ -30,6 +31,44 @@ const FACTOR_LABELS: Record<string, string> = {
   bmv_score: "Below market value",
   tenant_profile_score: "Tenant stability",
   licensing_risk_score: "Licensing risk",
+};
+
+const FACTOR_INFO: Record<string, { what: string; how: string; source: string }> = {
+  yield_score: {
+    what: "How much rent the property earns versus its price. Higher yield = more income per pound invested.",
+    how: "We divide the annual rent (monthly × 12) by the asking price, then compare to the UK BTL average (~6%). 7%+ scores Strong, 5–7% Moderate, under 5% Weak.",
+    source: "Listing data + UK BTL benchmark",
+  },
+  area_growth_score: {
+    what: "Whether prices in this postcode area have grown faster or slower than the rest of the UK.",
+    how: "We pull the last 5 years of HM Land Registry sales for the postcode sector and compare the median price trend to the national average.",
+    source: "HM Land Registry Price Paid Data",
+  },
+  demand_score: {
+    what: "How easily homes here get rented or sold — a proxy for how confident you can be about finding a tenant.",
+    how: "We compare local rent-to-price ratios against the regional rental index from ONS. Areas with strong rental demand for the price band score higher.",
+    source: "ONS Private Rental Market Statistics",
+  },
+  refinance_score: {
+    what: "Roughly how much equity you could pull out in 5 years if prices hold — useful if you plan to remortgage and reinvest.",
+    how: "We project the property's value at year 5 using the area's growth trend, then calculate the equity you could release at 75% LTV (the standard BTL refinance cap).",
+    source: "Land Registry growth trend + standard LTV rules",
+  },
+  bmv_score: {
+    what: "Whether the asking price is a fair deal compared to similar properties that recently sold nearby.",
+    how: "We find sold comps within 0.5 miles of the same property type and bedroom count, in the last 12 months. The deeper the asking price sits below the median comp, the higher the score.",
+    source: "HM Land Registry Price Paid Data + coordinates",
+  },
+  tenant_profile_score: {
+    what: "How stable the local rental market looks — based on employment, household composition, and tenure mix.",
+    how: "We use ONS Census 2021 data at LSOA level (employment rate, % renters, household stability indicators) and compare to the national distribution.",
+    source: "ONS Census 2021",
+  },
+  licensing_risk_score: {
+    what: "Whether the local council has a licensing scheme (selective, additional, or HMO) that affects renting this property out.",
+    how: "We check the property's local authority against the live register of licensing schemes. No scheme = high score. Selective/additional reduces the score; HMO licensing in a relevant property reduces it further.",
+    source: "Council licensing registers",
+  },
 };
 
 function formatGBP(pence: number | null | undefined, opts?: { signed?: boolean }) {
@@ -528,42 +567,67 @@ export default async function DealPage({
 
       <Section
         title="Investment factors"
-        hint="Tap any row for the inputs we used (V1.2)."
+        hint="Tap any factor to see what it means and how it's calculated."
       >
         <div className="grid md:grid-cols-2 gap-x-8 gap-y-3">
           {factors.map((f) => {
             const fb = scoreBand(f.score);
+            const info = FACTOR_INFO[f.key as string];
             return (
-              <div key={f.key as string}>
-                <div className="flex justify-between items-center text-sm mb-1">
-                  <span className="text-body">{f.label}</span>
-                  {f.score != null ? (
-                    <span className="text-ink font-medium">{f.score}</span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 text-[10px] text-faint uppercase tracking-wider">
-                      <Lock className="h-3 w-3" />
-                      Insufficient data
+              <details key={f.key as string} className="group">
+                <summary className="cursor-pointer list-none">
+                  <div className="flex justify-between items-center text-sm mb-1">
+                    <span className="inline-flex items-center gap-1.5 text-body">
+                      {f.label}
+                      <Info className="h-3.5 w-3.5 text-faint group-hover:text-[var(--color-primary)] transition-colors" />
                     </span>
-                  )}
-                </div>
-                <div className="h-1.5 rounded-full bg-fill overflow-hidden">
-                  {f.score != null ? (
-                    <div
-                      className={`h-full rounded-full ${bandClass(fb)}`}
-                      style={{ width: `${f.score}%` }}
-                    />
-                  ) : (
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: "100%",
-                        backgroundImage:
-                          "repeating-linear-gradient(45deg, var(--color-line), var(--color-line) 4px, transparent 4px, transparent 8px)",
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
+                    {f.score != null ? (
+                      <span className="text-ink font-medium">{f.score}</span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-[10px] text-faint uppercase tracking-wider">
+                        <Lock className="h-3 w-3" />
+                        Insufficient data
+                      </span>
+                    )}
+                  </div>
+                  <div className="h-1.5 rounded-full bg-fill overflow-hidden">
+                    {f.score != null ? (
+                      <div
+                        className={`h-full rounded-full ${bandClass(fb)}`}
+                        style={{ width: `${f.score}%` }}
+                      />
+                    ) : (
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: "100%",
+                          backgroundImage:
+                            "repeating-linear-gradient(45deg, var(--color-line), var(--color-line) 4px, transparent 4px, transparent 8px)",
+                        }}
+                      />
+                    )}
+                  </div>
+                </summary>
+                {info && (
+                  <div className="mt-3 rounded-md border border-line bg-fill/50 p-3 text-xs space-y-2">
+                    <div>
+                      <p className="font-semibold text-ink">What it means</p>
+                      <p className="text-body mt-0.5 leading-relaxed">
+                        {info.what}
+                      </p>
+                    </div>
+                    <div>
+                      <p className="font-semibold text-ink">How we calculate it</p>
+                      <p className="text-body mt-0.5 leading-relaxed">
+                        {info.how}
+                      </p>
+                    </div>
+                    <p className="text-muted italic pt-1">
+                      Source: {info.source}
+                    </p>
+                  </div>
+                )}
+              </details>
             );
           })}
         </div>

@@ -1,10 +1,17 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ExternalLink, RotateCcw, Trash2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ExternalLink,
+  RotateCcw,
+  ShieldCheck,
+  ShieldOff,
+  Trash2,
+} from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { changeTier, deleteDeal, resetQuota } from "./actions";
+import { changeTier, deleteDeal, resetQuota, toggleAdmin } from "./actions";
 
 const TIERS = ["free", "investor", "pro", "portfolio"] as const;
 
@@ -315,7 +322,35 @@ export default async function AdminUsersPage({
                       Reset monthly quota
                     </Button>
                   </form>
+
+                  {selected.id !== user.id && (
+                    <form action={toggleAdmin}>
+                      <input type="hidden" name="userId" value={selected.id} />
+                      <input
+                        type="hidden"
+                        name="makeAdmin"
+                        value={selected.is_admin ? "0" : "1"}
+                      />
+                      <Button type="submit" size="sm" variant="outline">
+                        {selected.is_admin ? (
+                          <>
+                            <ShieldOff className="h-4 w-4" />
+                            Revoke admin
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="h-4 w-4" />
+                            Make admin
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  )}
                 </div>
+                <p className="text-xs text-muted mt-3">
+                  Admins can see every user&apos;s deals. Regular users only
+                  ever see their own.
+                </p>
               </CardContent>
             </Card>
 

@@ -62,6 +62,27 @@ export async function deleteDeal(formData: FormData) {
   revalidatePath("/admin/users");
 }
 
+export async function toggleAdmin(formData: FormData) {
+  const userId = String(formData.get("userId") ?? "");
+  const makeAdmin = formData.get("makeAdmin") === "1";
+  if (!userId) return;
+  const { supabase, adminId } = await assertAdmin();
+  if (userId === adminId && !makeAdmin) {
+    // Prevent demoting yourself — would lock you out of /admin.
+    return;
+  }
+  await supabase
+    .from("users")
+    .update({ is_admin: makeAdmin })
+    .eq("id", userId);
+  await supabase.from("audit_log").insert({
+    user_id: adminId,
+    event_type: makeAdmin ? "admin_granted" : "admin_revoked",
+    metadata: { target_user: userId },
+  });
+  revalidatePath("/admin/users");
+}
+
 export async function deleteUser(formData: FormData) {
   const userId = String(formData.get("userId") ?? "");
   if (!userId) return;
