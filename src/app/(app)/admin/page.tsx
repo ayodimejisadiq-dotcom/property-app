@@ -151,12 +151,18 @@ export default async function AdminPage() {
           A snapshot of who&apos;s signing up, what they&apos;re analysing, and
           who&apos;s active.
         </p>
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap gap-4">
           <Link
             href="/admin/users"
             className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] hover:underline"
           >
             Manage users →
+          </Link>
+          <Link
+            href="/admin/waitlist"
+            className="inline-flex items-center gap-1 text-sm font-medium text-[var(--color-primary)] hover:underline"
+          >
+            Waitlist &amp; site mode →
           </Link>
         </div>
       </div>

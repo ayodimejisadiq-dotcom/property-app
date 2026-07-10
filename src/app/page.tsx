@@ -19,6 +19,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/app/Logo";
+import { WaitlistLanding } from "@/components/app/WaitlistLanding";
 
 export default async function LandingPage() {
   const supabase = await createClient();
@@ -26,6 +27,16 @@ export default async function LandingPage() {
     data: { user },
   } = await supabase.auth.getUser();
   if (user) redirect("/dashboard");
+
+  const { data: settings } = await supabase
+    .from("site_settings")
+    .select("waitlist_mode")
+    .eq("id", true)
+    .maybeSingle();
+
+  if (settings?.waitlist_mode ?? true) {
+    return <WaitlistLanding />;
+  }
 
   return (
     <div className="min-h-screen bg-white">
