@@ -56,7 +56,8 @@ export function WaitlistLanding() {
           </span>
 
           <h1 className="mt-5 text-[2.5rem] sm:text-5xl md:text-6xl font-bold text-ink tracking-tight leading-[1.05]">
-            Is this property{" "}
+            Is this property
+            <br />
             <span style={{ color: "var(--color-primary)" }}>a good buy?</span>
           </h1>
 

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { AnnouncementBar } from "@/components/app/AnnouncementBar";
 import { CookieBanner } from "@/components/app/CookieBanner";
+import { createClient } from "@/lib/supabase/server";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -64,23 +65,35 @@ export const viewport: Viewport = {
   themeColor: "#4F46E5",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Hide the pricing announcement bar when the site is in waitlist mode —
+  // there's nothing to buy or sign up for yet.
+  const supabase = await createClient();
+  const { data: settings } = await supabase
+    .from("site_settings")
+    .select("waitlist_mode")
+    .eq("id", true)
+    .maybeSingle();
+  const waitlistMode = settings?.waitlist_mode ?? true;
+
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-white text-body">
         <ToastProvider>
-          <AnnouncementBar
-            message={
-              <>
-                <span className="font-semibold">Free during early access</span>
-                <span className="opacity-80"> — 5 reports a month, no card.</span>
-              </>
-            }
-            href="/billing"
-            ctaLabel="See plans"
-          />
+          {!waitlistMode && (
+            <AnnouncementBar
+              message={
+                <>
+                  <span className="font-semibold">Free during early access</span>
+                  <span className="opacity-80"> — 5 reports a month, no card.</span>
+                </>
+              }
+              href="/billing"
+              ctaLabel="See plans"
+            />
+          )}
           {children}
           <CookieBanner />
         </ToastProvider>
