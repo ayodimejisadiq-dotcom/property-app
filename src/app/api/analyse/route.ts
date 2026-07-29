@@ -3,8 +3,13 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { computeFinancials } from "@/lib/financials";
 import { runScoring } from "@/lib/scoring";
+import { getAreaStats } from "@/lib/data/areaStats";
 import { generateDealReport } from "@/lib/ai/dealReport";
 import { FREE_TIER_MONTHLY_DEALS } from "@/lib/constants";
+
+// Area-data fetches (Land Registry SPARQL can be slow on a cold sector)
+// plus the AI report need more than the default function window.
+export const maxDuration = 60;
 
 const PROPERTY_TYPES = [
   "terraced",
@@ -111,11 +116,21 @@ export async function POST(req: Request) {
     mortgageTermYears: data.mortgageTermYears,
   });
 
-  const { composite, factors } = runScoring({
+  // Area data (Land Registry + census) is best-effort: on failure the four
+  // area-driven factors score null and the composite redistributes weight.
+  let areaStats: Awaited<ReturnType<typeof getAreaStats>> = null;
+  try {
+    areaStats = await getAreaStats(supabase, data.postcode, data.propertyType);
+  } catch (e) {
+    console.error("Area stats fetch failed:", e);
+  }
+
+  const { composite, factors, scoredFactorCount, details } = runScoring({
     grossYieldBps: fin.grossYieldBps,
     pricePence,
     depositPercent: data.depositPercent,
     postcode: data.postcode,
+    areaStats,
   });
 
   // Best-effort AI report. Fail open — saving the deal is more important than
@@ -132,6 +147,15 @@ export async function POST(req: Request) {
         monthlyRentPounds: data.monthlyRentPounds,
       },
       scores: { composite, ...factors },
+      factorNotes: {
+        yield: details.yield.reasoning,
+        refinance: details.refinance.reasoning,
+        licensingRisk: details.licensing.reasoning,
+        areaGrowth: details.areaGrowth.reasoning,
+        bmv: details.bmv.reasoning,
+        demand: details.demand.reasoning,
+        tenantProfile: details.tenantProfile.reasoning,
+      },
       financials: {
         grossYieldPct: fin.grossYieldBps / 100,
         netYieldPct: fin.netYieldBps / 100,
@@ -168,6 +192,25 @@ export async function POST(req: Request) {
       bmv_score: factors.bmv,
       tenant_profile_score: factors.tenantProfile,
       licensing_risk_score: factors.licensingRisk,
+      factor_details: {
+        scoredFactorCount,
+        yield: details.yield,
+        refinance: {
+          reasoning: details.refinance.reasoning,
+          equityMultiple: details.refinance.equityMultiple,
+        },
+        licensing: {
+          reasoning: details.licensing.reasoning,
+          band: details.licensing.band,
+          city: details.licensing.city,
+          schemes: details.licensing.schemes,
+          source: details.licensing.source,
+        },
+        areaGrowth: details.areaGrowth,
+        bmv: details.bmv,
+        demand: details.demand,
+        tenantProfile: details.tenantProfile,
+      },
       gross_yield_bps: fin.grossYieldBps,
       net_yield_bps: fin.netYieldBps,
       monthly_cashflow: fin.monthlyCashflow,

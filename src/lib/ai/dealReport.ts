@@ -16,6 +16,7 @@ const MODEL = "claude-sonnet-4-6";
 export async function generateDealReport(payload: {
   property: Record<string, unknown>;
   scores: Record<string, unknown>;
+  factorNotes?: Record<string, unknown>;
   financials: Record<string, unknown>;
 }): Promise<AIDealReport> {
   const apiKey = process.env.ANTHROPIC_API_KEY;

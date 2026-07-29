@@ -40,35 +40,46 @@ const FACTOR_INFO: Record<string, { what: string; how: string; source: string }>
     source: "Listing data + UK BTL benchmark",
   },
   area_growth_score: {
-    what: "Whether prices in this postcode area have grown faster or slower than the rest of the UK.",
-    how: "We pull the last 5 years of HM Land Registry sales for the postcode sector and compare the median price trend to the national average.",
-    source: "HM Land Registry Price Paid Data",
+    what: "Whether prices in this local authority have grown faster or slower than typical UK growth.",
+    how: "We take the last 5 years of the UK House Price Index for the property's local authority and score the total growth — around 25%+ scores Strong, flat or falling prices score Weak.",
+    source: "HM Land Registry UK House Price Index",
   },
   demand_score: {
-    what: "How easily homes here get rented or sold — a proxy for how confident you can be about finding a tenant.",
-    how: "We compare local rent-to-price ratios against the regional rental index from ONS. Areas with strong rental demand for the price band score higher.",
-    source: "ONS Private Rental Market Statistics",
+    what: "A proxy for how active the local market is — how confident you can be about liquidity and finding a tenant.",
+    how: "This is an inferred score, not a direct measurement: we combine the year-on-year trend in local sales volumes (Land Registry) with the share of households privately renting (Census 2021). More activity and a deeper rental market score higher.",
+    source: "Proxy: HM Land Registry sales volumes + ONS Census 2021",
   },
   refinance_score: {
     what: "Roughly how much equity you could pull out in 5 years if prices hold — useful if you plan to remortgage and reinvest.",
-    how: "We project the property's value at year 5 using the area's growth trend, then calculate the equity you could release at 75% LTV (the standard BTL refinance cap).",
-    source: "Land Registry growth trend + standard LTV rules",
+    how: "We project the property's value at year 5 assuming a conservative 3%/yr growth, then calculate the equity you could release at 75% LTV (the standard BTL refinance cap) versus your original deposit.",
+    source: "Fixed 3%/yr growth assumption + standard LTV rules",
   },
   bmv_score: {
     what: "Whether the asking price is a fair deal compared to similar properties that recently sold nearby.",
-    how: "We find sold comps within 0.5 miles of the same property type and bedroom count, in the last 12 months. The deeper the asking price sits below the median comp, the higher the score.",
-    source: "HM Land Registry Price Paid Data + coordinates",
+    how: "We compare the asking price to the median of sold transactions for the same property type in the postcode sector (widening to the district if needed) over the last 18 months. Sold data doesn't record bedrooms or condition, so treat this as a guide, not a valuation.",
+    source: "HM Land Registry Price Paid Data",
   },
   tenant_profile_score: {
-    what: "How stable the local rental market looks — based on employment, household composition, and tenure mix.",
-    how: "We use ONS Census 2021 data at LSOA level (employment rate, % renters, household stability indicators) and compare to the national distribution.",
-    source: "ONS Census 2021",
+    what: "How deep and stable the local rental market looks, based on the area's tenure mix.",
+    how: "We use Census 2021 tenure data for the local authority: a higher share of privately renting households scores higher, moderated down where social housing dominates. Figures are authority-level, not street-level.",
+    source: "ONS Census 2021 (table TS054)",
   },
   licensing_risk_score: {
     what: "Whether the local council has a licensing scheme (selective, additional, or HMO) that affects renting this property out.",
-    how: "We check the property's local authority against the live register of licensing schemes. No scheme = high score. Selective/additional reduces the score; HMO licensing in a relevant property reduces it further.",
-    source: "Council licensing registers",
+    how: "We check the postcode against our dataset of schemes in the 20 largest rental markets. No scheme flagged = high score; selective/additional/HMO schemes reduce it. Outside those cities we assume a cautious neutral score — always verify with the council.",
+    source: "Council licensing registers (top-20 dataset)",
   },
+};
+
+// Maps deal columns to keys in the factor_details jsonb written at analysis time.
+const FACTOR_DETAIL_KEYS: Record<string, string> = {
+  yield_score: "yield",
+  area_growth_score: "areaGrowth",
+  demand_score: "demand",
+  refinance_score: "refinance",
+  bmv_score: "bmv",
+  tenant_profile_score: "tenantProfile",
+  licensing_risk_score: "licensing",
 };
 
 function formatGBP(pence: number | null | undefined, opts?: { signed?: boolean }) {
@@ -120,6 +131,7 @@ interface DealRow {
   ai_report_risks: string[] | null;
   ai_report_score_band: string | null;
   ai_report_generated_at: string | null;
+  factor_details: Record<string, { reasoning?: string } | undefined> | null;
   created_at: string;
 }
 
@@ -573,6 +585,10 @@ export default async function DealPage({
           {factors.map((f) => {
             const fb = scoreBand(f.score);
             const info = FACTOR_INFO[f.key as string];
+            const detailKey = FACTOR_DETAIL_KEYS[f.key as string];
+            const reasoning =
+              (detailKey && deal.factor_details?.[detailKey]?.reasoning) ||
+              null;
             return (
               <details key={f.key as string} className="group">
                 <summary className="cursor-pointer list-none">
@@ -610,6 +626,14 @@ export default async function DealPage({
                 </summary>
                 {info && (
                   <div className="mt-3 rounded-md border border-line bg-fill/50 p-3 text-xs space-y-2">
+                    {reasoning && (
+                      <div>
+                        <p className="font-semibold text-ink">This deal</p>
+                        <p className="text-body mt-0.5 leading-relaxed">
+                          {reasoning}
+                        </p>
+                      </div>
+                    )}
                     <div>
                       <p className="font-semibold text-ink">What it means</p>
                       <p className="text-body mt-0.5 leading-relaxed">
@@ -635,12 +659,14 @@ export default async function DealPage({
           <div className="mt-5 rounded-md bg-[var(--color-primary-light)]/50 border border-[var(--color-primary)]/20 px-4 py-3 text-sm">
             <p className="text-ink font-medium flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-[var(--color-primary)]" />
-              {7 - scoredFactors} more factor
-              {7 - scoredFactors === 1 ? "" : "s"} coming soon
+              Scored on {scoredFactors} of 7 factors
             </p>
             <p className="text-muted mt-1">
-              Area growth, demand, BMV and tenant stability ship once Land
-              Registry and ONS Census data are wired in.
+              {7 - scoredFactors} factor{7 - scoredFactors === 1 ? "" : "s"}{" "}
+              had no data for this postcode (Land Registry / ONS coverage
+              varies by area — Scotland and Northern Ireland aren&apos;t
+              covered). The composite reweights across the factors that did
+              score, so lean on those and your own checks for the rest.
             </p>
           </div>
         )}

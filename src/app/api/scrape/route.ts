@@ -6,6 +6,8 @@ import {
   UnsupportedListingError,
   scrapeListing,
 } from "@/lib/scrapers";
+import { lookupPostcodeArea } from "@/lib/geo/postcodeArea";
+import { estimateMonthlyRent } from "@/lib/data/rentEstimate";
 import { FREE_TIER_MONTHLY_DEALS } from "@/lib/constants";
 
 const Body = z.object({ url: z.string().url() });
@@ -63,12 +65,26 @@ export async function POST(req: Request) {
 
   try {
     const result = await scrapeListing(parsed.data.url);
+
+    // Sale listings never show rent. Pre-fill a rough regional estimate so
+    // the yield factor isn't computed from a guess the user invents — the
+    // client flags it as an estimate to review.
+    let rentEstimated = false;
+    if (result.monthlyRentPounds == null && result.postcode) {
+      const area = await lookupPostcodeArea(result.postcode).catch(() => null);
+      result.monthlyRentPounds = estimateMonthlyRent(
+        area?.region ?? area?.country ?? null,
+        result.bedrooms ?? 3,
+      );
+      rentEstimated = true;
+    }
+
     // Increment only on success so failed/blocked fetches don't burn quota.
     await supabase
       .from("users")
       .update({ scrapes_used_this_month: used + 1 })
       .eq("id", user.id);
-    return NextResponse.json({ data: result });
+    return NextResponse.json({ data: { ...result, rentEstimated } });
   } catch (err) {
     if (err instanceof UnsupportedListingError) {
       return NextResponse.json({ error: err.message }, { status: 400 });
