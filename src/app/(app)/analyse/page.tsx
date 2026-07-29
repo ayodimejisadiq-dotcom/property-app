@@ -187,7 +187,9 @@ export default function AnalysePage() {
                 monthlyRentPounds: data.monthlyRentPounds ?? undefined,
               });
               setScrapeNotice(
-                "Pre-filled from listing — review and add anything missing.",
+                data.rentEstimated
+                  ? "Pre-filled from listing. The monthly rent is a rough regional estimate — check it against local listings before running the analysis."
+                  : "Pre-filled from listing — review and add anything missing.",
               );
               setTab("manual");
             }}
@@ -326,9 +328,10 @@ export default function AnalysePage() {
               <p className="text-xs text-faint flex items-start gap-1.5 max-w-md">
                 <Info className="h-3.5 w-3.5 mt-0.5 shrink-0" />
                 <span>
-                  Some factors (area growth, BMV, licensing) need real UK data
-                  sources that ship in Phase 3. Until then they&apos;ll show
-                  &quot;insufficient data&quot;.
+                  Area factors (growth, BMV, demand, tenant profile) use HM
+                  Land Registry and ONS Census data. If a source has no data
+                  for this postcode, that factor shows &quot;insufficient
+                  data&quot; and the composite reweights.
                 </span>
               </p>
               <Button type="submit" size="lg" disabled={submitting}>
@@ -363,6 +366,8 @@ interface ScrapedPayload {
     | "other"
     | null;
   monthlyRentPounds: number | null;
+  /** True when monthlyRentPounds is a regional estimate, not from the listing */
+  rentEstimated?: boolean;
 }
 
 function UrlPasteTab({

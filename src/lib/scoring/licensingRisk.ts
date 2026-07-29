@@ -42,12 +42,16 @@ export function scoreLicensingRisk(postcode: string): LicensingResult {
 
   const match = CITIES.find((c) => c.prefixes.includes(outward));
   if (!match) {
+    // Outside the top-20 city dataset. Most English councils run no scheme
+    // beyond mandatory HMO licensing, so score a cautious neutral rather
+    // than dropping the factor — but keep the check-manually band so the
+    // UI tells the user to verify with the council.
     return {
-      score: null,
+      score: 70,
       band: "CHECK_MANUALLY",
       city: null,
       schemes: [],
-      reasoning: `Outside our top-20 city dataset (${outward}). Check the council's licensing pages directly.`,
+      reasoning: `${outward} isn't in our licensing dataset of the 20 largest rental markets. Most councils only apply mandatory HMO licensing, so we've assumed a cautious neutral score — verify selective/additional schemes on the council's licensing pages.`,
       source: "https://www.gov.uk/find-licences/private-rented-property",
     };
   }

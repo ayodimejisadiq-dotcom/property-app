@@ -20,13 +20,20 @@ JSON shape:
 export function buildUserPrompt(payload: {
   property: Record<string, unknown>;
   scores: Record<string, unknown>;
+  factorNotes?: Record<string, unknown>;
   financials: Record<string, unknown>;
 }): string {
+  const notes = payload.factorNotes
+    ? `
+
+Per-factor data notes (what each score was derived from):
+${JSON.stringify(payload.factorNotes, null, 2)}`
+    : "";
   return `Property:
 ${JSON.stringify(payload.property, null, 2)}
 
 Scores (0-100, null = insufficient data):
-${JSON.stringify(payload.scores, null, 2)}
+${JSON.stringify(payload.scores, null, 2)}${notes}
 
 Financials:
 ${JSON.stringify(payload.financials, null, 2)}
