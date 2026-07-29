@@ -169,11 +169,16 @@ LIMIT 300`;
     return comps;
   };
 
-  const sectorBindings = await runSparql(build(opts.sector));
-  if (sectorBindings) {
-    const comps = parse(sectorBindings);
-    if (comps.length >= minComps) {
-      return { comps, level: "sector", typeFiltered: typeUri != null };
+  // Outward-only lookups have no inward digit — the "sector" is just the
+  // outcode, so skip straight to the district-level query. The trailing
+  // space in the outcode prefix stops NG3 also matching NG34.
+  if (opts.sector.includes(" ")) {
+    const sectorBindings = await runSparql(build(opts.sector));
+    if (sectorBindings) {
+      const comps = parse(sectorBindings);
+      if (comps.length >= minComps) {
+        return { comps, level: "sector", typeFiltered: typeUri != null };
+      }
     }
   }
 

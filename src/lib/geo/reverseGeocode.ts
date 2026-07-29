@@ -27,7 +27,7 @@ export async function reverseGeocodePostcode(
     return null;
   }
 
-  const url = `https://api.postcodes.io/postcodes?lon=${longitude}&lat=${latitude}&limit=1&radius=500`;
+  const url = `https://api.postcodes.io/postcodes?lon=${longitude}&lat=${latitude}&limit=1&radius=1000`;
 
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(4000) });
@@ -41,11 +41,32 @@ export async function reverseGeocodePostcode(
 }
 
 // Free-text address → lat/lng via Nominatim (OpenStreetMap). UK-biased.
+// Listing addresses often carry a county suffix ("…, Nottinghamshire")
+// that makes Nominatim miss — retry with just street + town if the full
+// string finds nothing.
 export async function geocodeAddress(
   address: string,
 ): Promise<{ lat: number; lon: number } | null> {
-  if (!address.trim()) return null;
-  const q = encodeURIComponent(`${address}, United Kingdom`);
+  const full = address.trim();
+  if (!full) return null;
+
+  const variants = [full];
+  const parts = full.split(",").map((p) => p.trim()).filter(Boolean);
+  if (parts.length > 2) {
+    variants.push(parts.slice(0, 2).join(", "));
+  }
+
+  for (const variant of variants) {
+    const hit = await geocodeOnce(variant);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+async function geocodeOnce(
+  query: string,
+): Promise<{ lat: number; lon: number } | null> {
+  const q = encodeURIComponent(`${query}, United Kingdom`);
   const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&countrycodes=gb&limit=1`;
   try {
     const res = await fetch(url, {

@@ -51,7 +51,7 @@ export function scoreBmv(
   else if (d >= -15) score = Math.round(25 + ((d + 15) / 10) * 20);
   else score = 15;
 
-  const scope = `${comps.count} ${comps.typeFiltered ? "same-type " : ""}sales in this postcode ${comps.level} over ${comps.windowMonths} months`;
+  const scope = `${comps.count} ${comps.typeFiltered ? "same-type " : ""}sales in this postcode ${comps.level === "sector" ? "sector" : "district"} over ${comps.windowMonths} months`;
   const rel =
     d >= 5
       ? `${d.toFixed(1)}% below`
