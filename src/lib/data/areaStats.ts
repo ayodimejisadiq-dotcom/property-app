@@ -14,8 +14,9 @@ import { fetchCensusTenure, type CensusTenure } from "@/lib/data/census";
 
 const CACHE_TTL_DAYS = 30;
 // Hard ceiling on live fetching so a slow SPARQL query can't push the
-// analyse request past the serverless function limit.
-const FETCH_BUDGET_MS = 14_000;
+// analyse request past the serverless function limit (maxDuration 60s,
+// minus ~15s for the AI report and DB work).
+const FETCH_BUDGET_MS = 28_000;
 
 export interface HpiStats {
   latestMonth: string;
@@ -128,8 +129,12 @@ export async function getAreaStats(
     .gte("fetched_at", minFetchedAt)
     .maybeSingle();
 
+  // Serve the cache only when the Land Registry data is present — a
+  // payload cached during a transient SPARQL failure would otherwise pin
+  // "insufficient data" on this sector for the whole TTL.
   if (cached?.payload) {
-    return cached.payload as AreaStats;
+    const p = cached.payload as AreaStats;
+    if (p.hpi && p.comps) return p;
   }
 
   const hpiRegion = area.adminDistrict ?? area.region ?? area.country;
@@ -180,9 +185,14 @@ export async function getAreaStats(
     fetchedAt: new Date().toISOString(),
   };
 
-  // Only cache when at least one source produced data, so transient
-  // failures retry on the next analysis rather than sticking for 30 days.
-  if (hpi || comps || tenure) {
+  console.warn(
+    `area_stats ${cacheKey}: hpi=${hpi ? "ok" : "none"} comps=${comps ? comps.count : "none"} tenure=${tenure ? "ok" : "none"}`,
+  );
+
+  // Cache only complete Land Registry results — partial payloads (e.g. a
+  // transient SPARQL failure) must retry on the next analysis, not stick
+  // for 30 days. Tenure is cheap to refetch, so it doesn't gate caching.
+  if (hpi && comps) {
     await supabase
       .from("area_stats")
       .upsert(

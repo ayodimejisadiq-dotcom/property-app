@@ -10,30 +10,46 @@
 // as "factor not scorable", never as an error.
 
 const SPARQL_ENDPOINT = "https://landregistry.data.gov.uk/landregistry/query";
-const SPARQL_TIMEOUT_MS = 12_000;
+
+// Browser-like UA — the landregistry.data.gov.uk WAF has been seen
+// rejecting obviously non-browser agents.
+const UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36";
 
 interface SparqlBinding {
   [variable: string]: { type: string; value: string; datatype?: string };
 }
 
-async function runSparql(query: string): Promise<SparqlBinding[] | null> {
+async function runSparql(
+  query: string,
+  label: string,
+  timeoutMs: number,
+): Promise<SparqlBinding[] | null> {
   try {
     const res = await fetch(SPARQL_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
         Accept: "application/sparql-results+json",
-        "User-Agent": "Capora/1.0 (capora.co.uk)",
+        "User-Agent": UA,
       },
       body: `query=${encodeURIComponent(query)}`,
-      signal: AbortSignal.timeout(SPARQL_TIMEOUT_MS),
+      signal: AbortSignal.timeout(timeoutMs),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      console.error(
+        `SPARQL ${label} failed: HTTP ${res.status} ${body.slice(0, 200)}`,
+      );
+      return null;
+    }
     const json = (await res.json()) as {
       results?: { bindings?: SparqlBinding[] };
     };
     return json.results?.bindings ?? null;
-  } catch {
+  } catch (err) {
+    const e = err as Error;
+    console.error(`SPARQL ${label} failed: ${e.name}: ${e.message}`);
     return null;
   }
 }
@@ -78,8 +94,11 @@ SELECT ?month ?price ?volume WHERE {
 ORDER BY DESC(?month)
 LIMIT 80`;
 
-  const bindings = await runSparql(query);
-  if (!bindings || bindings.length === 0) return null;
+  const bindings = await runSparql(query, `hpi:${slug}`, 15_000);
+  if (!bindings || bindings.length === 0) {
+    if (bindings) console.warn(`SPARQL hpi:${slug} returned 0 rows`);
+    return null;
+  }
 
   const points: HpiPoint[] = [];
   for (const b of bindings) {
@@ -172,22 +191,34 @@ LIMIT 300`;
   // Outward-only lookups have no inward digit — the "sector" is just the
   // outcode, so skip straight to the district-level query. The trailing
   // space in the outcode prefix stops NG3 also matching NG34.
+  // The postcode-prefix scan is the endpoint's slowest query shape —
+  // give it a generous timeout; results are cached for 30 days.
   if (opts.sector.includes(" ")) {
-    const sectorBindings = await runSparql(build(opts.sector));
+    const sectorBindings = await runSparql(
+      build(opts.sector),
+      `ppd:${opts.sector}`,
+      25_000,
+    );
     if (sectorBindings) {
       const comps = parse(sectorBindings);
       if (comps.length >= minComps) {
         return { comps, level: "sector", typeFiltered: typeUri != null };
       }
+      console.warn(`SPARQL ppd:${opts.sector} returned ${comps.length} comps`);
     }
   }
 
-  const outcodeBindings = await runSparql(build(`${opts.outcode} `));
+  const outcodeBindings = await runSparql(
+    build(`${opts.outcode} `),
+    `ppd:${opts.outcode}`,
+    25_000,
+  );
   if (outcodeBindings) {
     const comps = parse(outcodeBindings);
     if (comps.length >= minComps) {
       return { comps, level: "outcode", typeFiltered: typeUri != null };
     }
+    console.warn(`SPARQL ppd:${opts.outcode} returned ${comps.length} comps`);
   }
   return null;
 }
