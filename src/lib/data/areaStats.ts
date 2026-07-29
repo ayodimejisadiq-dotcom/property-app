@@ -8,15 +8,17 @@ import {
   fetchHpiSeries,
   fetchSoldComps,
   medianPrice,
+  sleep,
   type HpiPoint,
 } from "@/lib/data/landRegistry";
 import { fetchCensusTenure, type CensusTenure } from "@/lib/data/census";
 
 const CACHE_TTL_DAYS = 30;
-// Hard ceiling on live fetching so a slow SPARQL query can't push the
-// analyse request past the serverless function limit (maxDuration 60s,
-// minus ~15s for the AI report and DB work).
-const FETCH_BUDGET_MS = 28_000;
+// Hard ceiling on the whole Land Registry sequence so slow SPARQL queries
+// can't push the analyse request past the serverless function limit
+// (maxDuration 60s, minus ~15s for the AI report and DB work).
+const LAND_REGISTRY_BUDGET_MS = 40_000;
+const CENSUS_BUDGET_MS = 8_000;
 
 export interface HpiStats {
   latestMonth: string;
@@ -137,35 +139,34 @@ export async function getAreaStats(
     if (p.hpi && p.comps) return p;
   }
 
-  const hpiRegion = area.adminDistrict ?? area.region ?? area.country;
+  // The Land Registry endpoint rate-limits per IP, so its two queries run
+  // SEQUENTIALLY with spacing. The census (Nomis) call is a different host
+  // and can safely run alongside.
+  const landRegistrySequence = (async () => {
+    const hpiPoints = await fetchHpiSeries([
+      area.adminDistrict,
+      area.region,
+      area.country,
+    ]);
+    await sleep(600);
+    const compsResult = await fetchSoldComps({
+      sector: area.sector,
+      outcode: area.outcode,
+      propertyType,
+    });
+    return { hpiPoints, compsResult };
+  })();
 
-  const [hpiPoints, compsResult, tenure] = await Promise.all([
-    hpiRegion
-      ? withTimeout(fetchHpiSeries(hpiRegion), FETCH_BUDGET_MS)
-      : Promise.resolve(null),
-    withTimeout(
-      fetchSoldComps({
-        sector: area.sector,
-        outcode: area.outcode,
-        propertyType,
-      }),
-      FETCH_BUDGET_MS,
-    ),
+  const [lr, tenure] = await Promise.all([
+    withTimeout(landRegistrySequence, LAND_REGISTRY_BUDGET_MS),
     area.adminDistrictCode
-      ? withTimeout(fetchCensusTenure(area.adminDistrictCode), FETCH_BUDGET_MS)
+      ? withTimeout(fetchCensusTenure(area.adminDistrictCode), CENSUS_BUDGET_MS)
       : Promise.resolve(null),
   ]);
 
-  // District-level HPI can be missing (e.g. slug mismatch) — retry once at
-  // region level, which always exists for England & Wales.
-  let hpi = hpiPoints ? summariseHpi(hpiPoints) : null;
-  if (!hpi && area.region && area.adminDistrict) {
-    const regionPoints = await withTimeout(
-      fetchHpiSeries(area.region),
-      FETCH_BUDGET_MS,
-    );
-    hpi = regionPoints ? summariseHpi(regionPoints) : null;
-  }
+  const hpiPoints = lr?.hpiPoints ?? null;
+  const compsResult = lr?.compsResult ?? null;
+  const hpi = hpiPoints ? summariseHpi(hpiPoints) : null;
 
   const comps: CompsStats | null = compsResult
     ? {

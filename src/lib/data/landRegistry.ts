@@ -20,10 +20,18 @@ interface SparqlBinding {
   [variable: string]: { type: string; value: string; datatype?: string };
 }
 
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// The endpoint rate-limits per IP (429) — Vercel egress IPs are shared, so
+// callers must run Land Registry queries SEQUENTIALLY with spacing, never
+// in parallel. One backoff-retry on 429 is built in here.
 async function runSparql(
   query: string,
   label: string,
   timeoutMs: number,
+  retryOn429 = true,
 ): Promise<SparqlBinding[] | null> {
   try {
     const res = await fetch(SPARQL_ENDPOINT, {
@@ -36,10 +44,15 @@ async function runSparql(
       body: `query=${encodeURIComponent(query)}`,
       signal: AbortSignal.timeout(timeoutMs),
     });
+    if (res.status === 429 && retryOn429) {
+      console.warn(`SPARQL ${label}: 429, backing off 2s and retrying once`);
+      await sleep(2000);
+      return runSparql(query, label, timeoutMs, false);
+    }
     if (!res.ok) {
       const body = await res.text().catch(() => "");
       console.error(
-        `SPARQL ${label} failed: HTTP ${res.status} ${body.slice(0, 200)}`,
+        `SPARQL ${label} failed: HTTP ${res.status} ${body.slice(0, 120)}`,
       );
       return null;
     }
@@ -66,6 +79,36 @@ export function toRegionSlug(name: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+/**
+ * UKHPI naming doesn't always match the postcodes.io authority name —
+ * e.g. "Nottingham" is "city-of-nottingham", and ONS-style "Bristol,
+ * City of" is "city-of-bristol". Build the plausible slugs in the order
+ * worth trying; later entries (region, country) are broader fallbacks.
+ */
+export function regionSlugCandidates(
+  names: Array<string | null>,
+): string[] {
+  const out: string[] = [];
+  const push = (slug: string) => {
+    if (slug && !out.includes(slug)) out.push(slug);
+  };
+  const [district, ...fallbacks] = names;
+  if (district) {
+    const suffixed = district.match(/^(.*),\s*city of$/i);
+    if (suffixed) {
+      push(`city-of-${toRegionSlug(suffixed[1])}`);
+    }
+    push(toRegionSlug(district));
+    if (!/^city of /i.test(district) && !suffixed) {
+      push(`city-of-${toRegionSlug(district)}`);
+    }
+  }
+  for (const name of fallbacks) {
+    if (name) push(toRegionSlug(name));
+  }
+  return out.slice(0, 5);
+}
+
 export interface HpiPoint {
   /** "YYYY-MM" */
   month: string;
@@ -74,16 +117,19 @@ export interface HpiPoint {
 }
 
 /**
- * Monthly HPI series for a local authority (or region as fallback),
- * newest first, up to ~6.5 years — enough for 5-year growth plus a
- * 24-month sales-volume window.
+ * Monthly HPI series, newest first, up to ~6.5 years — enough for 5-year
+ * growth plus a 24-month sales-volume window. Tries each candidate name
+ * (authority, city-of variant, region, country) in order, sequentially,
+ * until one returns rows.
  */
 export async function fetchHpiSeries(
-  regionName: string,
+  regionNames: Array<string | null>,
 ): Promise<HpiPoint[] | null> {
-  const slug = toRegionSlug(regionName);
-  if (!slug) return null;
-  const query = `
+  const slugs = regionSlugCandidates(regionNames);
+  for (let i = 0; i < slugs.length; i++) {
+    if (i > 0) await sleep(600);
+    const slug = slugs[i];
+    const query = `
 prefix ukhpi: <http://landregistry.data.gov.uk/def/ukhpi/>
 SELECT ?month ?price ?volume WHERE {
   ?obs ukhpi:refRegion <http://landregistry.data.gov.uk/id/region/${slug}> ;
@@ -94,25 +140,28 @@ SELECT ?month ?price ?volume WHERE {
 ORDER BY DESC(?month)
 LIMIT 80`;
 
-  const bindings = await runSparql(query, `hpi:${slug}`, 15_000);
-  if (!bindings || bindings.length === 0) {
-    if (bindings) console.warn(`SPARQL hpi:${slug} returned 0 rows`);
-    return null;
-  }
+    const bindings = await runSparql(query, `hpi:${slug}`, 10_000);
+    if (!bindings) continue;
+    if (bindings.length === 0) {
+      console.warn(`SPARQL hpi:${slug} returned 0 rows`);
+      continue;
+    }
 
-  const points: HpiPoint[] = [];
-  for (const b of bindings) {
-    const month = (b.month?.value ?? "").slice(0, 7);
-    const price = parseFloat(b.price?.value ?? "");
-    if (!/^\d{4}-\d{2}$/.test(month) || !Number.isFinite(price)) continue;
-    const volRaw = b.volume ? parseFloat(b.volume.value) : NaN;
-    points.push({
-      month,
-      averagePricePounds: Math.round(price),
-      salesVolume: Number.isFinite(volRaw) ? Math.round(volRaw) : null,
-    });
+    const points: HpiPoint[] = [];
+    for (const b of bindings) {
+      const month = (b.month?.value ?? "").slice(0, 7);
+      const price = parseFloat(b.price?.value ?? "");
+      if (!/^\d{4}-\d{2}$/.test(month) || !Number.isFinite(price)) continue;
+      const volRaw = b.volume ? parseFloat(b.volume.value) : NaN;
+      points.push({
+        month,
+        averagePricePounds: Math.round(price),
+        salesVolume: Number.isFinite(volRaw) ? Math.round(volRaw) : null,
+      });
+    }
+    if (points.length > 0) return points;
   }
-  return points.length > 0 ? points : null;
+  return null;
 }
 
 // PPD property-type URIs. Bungalows aren't a PPD category (they're recorded
@@ -159,6 +208,10 @@ export async function fetchSoldComps(opts: {
   since.setMonth(since.getMonth() - months);
   const sinceIso = since.toISOString().slice(0, 10);
 
+  // No ORDER BY — it forces the endpoint to materialise the full scan
+  // before returning (which is what caused sector-level timeouts). The
+  // 18-month date filter already bounds recency, and a median doesn't
+  // care about ordering.
   const build = (postcodePrefix: string) => `
 prefix lrppi: <http://landregistry.data.gov.uk/def/ppi/>
 prefix lrcommon: <http://landregistry.data.gov.uk/def/common/>
@@ -173,8 +226,7 @@ SELECT ?amount ?date WHERE {
   ${typeUri ? `?tx lrppi:propertyType <${typeUri}> .` : ""}
   FILTER(?date >= "${sinceIso}"^^xsd:date)
 }
-ORDER BY DESC(?date)
-LIMIT 300`;
+LIMIT 200`;
 
   const parse = (bindings: SparqlBinding[]): SoldComp[] => {
     const comps: SoldComp[] = [];
@@ -199,13 +251,17 @@ LIMIT 300`;
       `ppd:${opts.sector}`,
       25_000,
     );
-    if (sectorBindings) {
-      const comps = parse(sectorBindings);
-      if (comps.length >= minComps) {
-        return { comps, level: "sector", typeFiltered: typeUri != null };
-      }
-      console.warn(`SPARQL ppd:${opts.sector} returned ${comps.length} comps`);
+    if (sectorBindings === null) {
+      // Timed out or errored — the district-wide scan is strictly heavier,
+      // so don't pile a second doomed query (and a likely 429) on top.
+      return null;
     }
+    const comps = parse(sectorBindings);
+    if (comps.length >= minComps) {
+      return { comps, level: "sector", typeFiltered: typeUri != null };
+    }
+    console.warn(`SPARQL ppd:${opts.sector} returned ${comps.length} comps`);
+    await sleep(600);
   }
 
   const outcodeBindings = await runSparql(
