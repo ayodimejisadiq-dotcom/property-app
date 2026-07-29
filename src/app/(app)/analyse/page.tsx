@@ -33,14 +33,19 @@ const PROPERTY_TYPES = [
   { value: "other", label: "Other" },
 ] as const;
 
-const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+// Full postcode, or just the outward code (e.g. "NG3") when the listing
+// hides the rest — analysis then runs at district-level accuracy.
+const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?(\s*\d[A-Z]{2})?$/i;
 
 const Schema = z.object({
   address: z.string().min(3, "Please enter the full address"),
   postcode: z
     .string()
     .min(1, "Postcode required")
-    .regex(POSTCODE_RE, "Enter a valid UK postcode"),
+    .regex(
+      POSTCODE_RE,
+      "Enter a UK postcode — full (NG3 2AB) or just the outward code (NG3)",
+    ),
   pricePounds: z
     .number({ message: "Enter the asking price" })
     .int("Use whole pounds")

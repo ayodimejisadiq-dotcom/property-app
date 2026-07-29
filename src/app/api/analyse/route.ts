@@ -20,7 +20,9 @@ const PROPERTY_TYPES = [
   "other",
 ] as const;
 
-const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
+// Full postcode ("NG3 2AB") or outward code only ("NG3") — listings often
+// hide the inward part, and every factor still works at district level.
+const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?(\s*\d[A-Z]{2})?$/i;
 
 const Body = z.object({
   sourceUrl: z.string().url().nullish(),
@@ -29,7 +31,7 @@ const Body = z.object({
     .string()
     .trim()
     .toUpperCase()
-    .regex(POSTCODE_RE, "Enter a valid UK postcode"),
+    .regex(POSTCODE_RE, "Enter a UK postcode (full, or just the outward code like NG3)"),
   pricePounds: z.number().int().min(10_000).max(10_000_000),
   bedrooms: z.number().int().min(1).max(10),
   propertyType: z.enum(PROPERTY_TYPES),
