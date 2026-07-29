@@ -81,13 +81,10 @@ export default function PrivacyPage() {
             functions.
           </li>
           <li>
-            <strong>Anthropic</strong> — AI deal report generation. We send
-            the property fields and scores but not your email or account
-            identifiers.
-          </li>
-          <li>
             <strong>OpenAI</strong> — extracting property details from a URL
-            you paste. Only the URL is sent.
+            you paste (only the URL is sent), and generating the AI deal
+            report (we send the property fields and scores but not your
+            email or account identifiers).
           </li>
         </ul>
         <p>
