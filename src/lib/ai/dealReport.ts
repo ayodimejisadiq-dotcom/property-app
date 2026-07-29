@@ -1,4 +1,4 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { z } from "zod";
 import { SYSTEM_PROMPT, buildUserPrompt } from "./prompts";
 
@@ -11,7 +11,8 @@ const ReportSchema = z.object({
 
 export type AIDealReport = z.infer<typeof ReportSchema>;
 
-const MODEL = "claude-sonnet-4-6";
+// Same OpenAI account as the listing scraper — one key powers both.
+const MODEL = "gpt-4o-mini";
 
 export async function generateDealReport(payload: {
   property: Record<string, unknown>;
@@ -19,22 +20,23 @@ export async function generateDealReport(payload: {
   factorNotes?: Record<string, unknown>;
   financials: Record<string, unknown>;
 }): Promise<AIDealReport> {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) throw new Error("OPENAI_API_KEY not set");
 
-  const client = new Anthropic({ apiKey });
-  const message = await client.messages.create({
+  const client = new OpenAI({ apiKey });
+  const completion = await client.chat.completions.create({
     model: MODEL,
     max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: buildUserPrompt(payload) }],
+    // json_object mode guarantees syntactically valid JSON; the schema is
+    // enforced by the zod parse below.
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: buildUserPrompt(payload) },
+    ],
   });
 
-  const text = message.content
-    .filter((block): block is Anthropic.TextBlock => block.type === "text")
-    .map((b) => b.text)
-    .join("")
-    .trim();
+  const text = (completion.choices[0]?.message?.content ?? "").trim();
 
   // Strip stray markdown fences if the model adds them despite instructions
   const cleaned = text

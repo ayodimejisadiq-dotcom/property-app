@@ -11,7 +11,7 @@ A UK BTL deal-analysis web app. Investors paste a Rightmove/Zoopla URL or fill t
 - Next.js 16 (App Router) · TypeScript (strict)
 - Tailwind v4 · custom UI primitives (shadcn-style)
 - Supabase (Postgres + Auth via `@supabase/ssr`)
-- Anthropic SDK (Claude Sonnet 4)
+- OpenAI SDK (scraping + AI deal report)
 - `cheerio` for scraping · optional ScraperAPI proxy
 - Deployed on Vercel
 
@@ -30,7 +30,7 @@ Foundation only:
 
 ```bash
 pnpm install
-cp .env.example .env.local      # then fill in Supabase + Anthropic keys
+cp .env.example .env.local      # then fill in Supabase + OpenAI keys
 pnpm dev
 ```
 
@@ -49,7 +49,7 @@ Open <http://localhost:3000>.
 Vercel project: `prj_oETp89kpcWZ4ZK5RmC22ZQTZsLlS` (already created).
 
 1. Connect the GitHub repo to that project.
-2. Set env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, optional `SCRAPERAPI_KEY`).
+2. Set env vars (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, optional `SCRAPERAPI_KEY`).
 3. Push to `main` (or merge `claude/dealscope-v1-setup-6yJHm`) to deploy.
 
 ## Folder layout
