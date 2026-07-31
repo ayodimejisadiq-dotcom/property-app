@@ -23,6 +23,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { AnalysisProgress } from "@/components/app/AnalysisProgress";
 
 const PROPERTY_TYPES = [
   { value: "terraced", label: "Terraced" },
@@ -171,6 +172,8 @@ export default function AnalysePage() {
           </div>
         </div>
       </div>
+
+      {submitting && <AnalysisProgress />}
 
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList className="mb-6">
@@ -340,8 +343,17 @@ export default function AnalysePage() {
                 </span>
               </p>
               <Button type="submit" size="lg" disabled={submitting}>
-                {submitting ? "Running analysis…" : "Run analysis"}
-                {!submitting && <ArrowRight className="h-4 w-4" />}
+                {submitting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Running…
+                  </>
+                ) : (
+                  <>
+                    Run analysis
+                    <ArrowRight className="h-4 w-4" />
+                  </>
+                )}
               </Button>
             </div>
 
